@@ -1,0 +1,22 @@
+##-- Program Settings
+
+
+##-- Exploits
+files_array files_exploits.csv
+path_array /opt/exploitdb
+name_array Exploit
+git_array https://github.com/offensive-security/exploitdb.git
+
+
+##-- Shellcodes
+files_array files_shellcodes.csv
+path_array /opt/exploitdb
+name_array Shellcode
+git_array https://github.com/offensive-security/exploitdb.git
+
+
+##-- Papers
+files_array files_papers.csv
+path_array /opt/exploitdb-papers
+name_array Paper
+git_array https://github.com/offensive-security/exploitdb-papers.git
