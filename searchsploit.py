@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from sys import argv
+import os
 
 # Default options
 CLIPBOARD = False
@@ -29,22 +30,30 @@ AWK_SEARCH = ""
 progname = argv[0]
 files_array = []
 name_array = []
+path_array = []
 git_array = []
 
 
 def scrapeRC():
     divider = []
     settings = open(".searchsploit_rc").read().split("\n")
-    for i in range(len(settings)):
-        if(i[0] == "#"):
+    for i in settings:
+        if(i == "" or i[0] == "#"):
             continue
         divider = i.split(" ")
         if divider[0] == "files_array":
             files_array.append(divider[1])
         elif divider[0] == "name_array":
             name_array.append(divider[1])
+        elif divider[0] == "path_array":
+            path_array.append(divider[1])
         elif divider[0] == "git_array":
             git_array.append(divider[1])
+        elif divider[0] == "git_user":
+            if divider[1] == "_":
+                git_user = ""
+            else:
+                git_user = divider[1]
 
 
 scrapeRC()
@@ -111,46 +120,17 @@ def usage():
 
 # Update database check
 
-# def update():
+def update():
+    cwd = os.getcwd()
+    path = ""
+    for i in range(len(files_array)):
+        path = path_array[i]
 
-"""def update():
-    arraylength = len(files_array)
-    for i in range(len(arraylength)):
-        # Check to see if we already have the value
-        if (package_array[i] not in tmp_package[*]):
-            continue
+        # update via git
+        os.chdir(path)  # set path to repos directory
+        os.system("git pull --rebase")
+    os.chdir(cwd)
+    return
 
-        # Else save all the information
-        tmp_git += git_array[i]
-        tmp_path += path_array[i]
-        tmp_package += package_array[i]
 
-    # Loop around all the new arrays
-    arraylength = len(tmp_git)
-    for i in range(len(arraylength)):
-        git = tmp_git[i]
-        path = tmp_path[i]
-        package = tmp_package[i]
-
-        # Update from the repos (e.g. Kali)
-        dpkg - l "${package}" 2 > /dev/null > /dev/null
-        if [["$?" == "0"]]
-        then
-        updatedeb "${package}"
-        else
-        # Update from homebrew (e.g. OSX)
-        brew 2 > /dev/null > /dev/null
-        if [["$?" == "0"]]
-        then
-        # This only really only updates "./searchsploit". The rest (can) come via git as its updated more frequently
-        updatedbrew "${package}"
-        fi
-
-        # Update via Git
-        updategit "${package}" "${path}" "${git}"
-        fi
-    done
-
-    # Done
-    exit 6
- """
+update()
