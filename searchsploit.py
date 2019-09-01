@@ -25,6 +25,11 @@ CASE_TAG_GREP = "-i"
 CASE_TAG_FGREP = "tolower"
 AWK_SEARCH = ""
 
+
+terms = []
+args = []
+
+
 # RC info
 
 progname = argv[0]
@@ -141,3 +146,16 @@ def drawline():
     for i in range(int(cols)):
         line += "-"
     print(line)
+
+
+def validTerm(argsList):
+    invalidTerms = ["microsoft", "microsoft windows", "apache", "ftp",
+                    "http", "linux", "net", "network", "oracle", "ssh", "unknown"]
+    for i in range(len(argsList)):
+        if (argsList[i] in invalidTerms):
+            argsList.pop(i)
+            # Issues, return with something
+            print(
+                "[-] Skipping term: %s   (Term is too general. Please re-search manually:", i)
+    return argsList
+
