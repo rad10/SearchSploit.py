@@ -133,4 +133,11 @@ def update():
     return
 
 
-update()
+def drawline():
+    rows, cols = os.popen("stty size").read().split()
+    print(rows, cols)
+    line = ""
+    print(cols)
+    for i in range(int(cols)):
+        line += "-"
+    print(line)
