@@ -241,3 +241,29 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
     return searchTerms
 
 
+def nmapxml(file):
+    # Read XML file
+
+    # ## Feedback to enduser
+    print("[i] Reading: " + file)
+
+    # hosts = []  # list of hosts and their properties
+    # tmpip = ""
+    # tmphostname = ""
+    # tmpname = ""
+    # tmpservice = ""
+    # ## Read in XMP (IP, name, service, and version)
+    # xx This time with beautiful soup!
+    xmlsheet = BeautifulSoup(open(file, "r").read(), "lxml")
+
+    hostsheet = xmlsheet.find_all("host")
+    for host in hostsheet:
+        # tmpip = host.find("address").get("addr")
+        # tmphostname = host.find("hostname").get("name")
+        for service in host.find_all("service"):
+            terms.append(service.get("name"))
+            terms.append(service.get("product"))
+            terms.append(service.get("version"))
+    validTerm(terms)
+
+
