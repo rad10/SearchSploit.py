@@ -241,6 +241,67 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
     return searchTerms
 
 
+def searchsploitout():
+    # ## Used in searchsploitout/nmap's XML
+
+    # if(len(argv) == 1):
+        # return
+    args.append("-t")
+    if (JSON):
+        args.append("--json")
+    if(OVERFLOW):
+        args.append("--overflow")
+    if(WEBLINK):
+        args.append("--www")
+    if(COLOUR):
+        args.append("--colour")
+    if(EDBID):
+        args.append("--id")
+
+    # xx validating terms
+    validTerm(terms)
+    if JSON:
+        # TODO: finish json format
+        return
+
+    # xx building terminal look
+    col = int(os.popen("stty size").read().split()[1])
+    lim = (col - 3)/2
+    query = []
+    for i in range(len(files_array)):
+        if EDBID:
+            query = searchdb(path_array[i] + "/" +
+                             files_array[i], terms, [2, 0])
+        elif WEBLINK:
+            query = searchdb(path_array[i] + "/" +
+                             files_array[i], terms, [2, 1, 0])
+        else:
+            query = searchdb(path_array[i] + "/" +
+                             files_array[i], terms, [2, 1])
+
+        if len(query) == 0:
+            print(name_array[i] + ": No Results")
+            continue
+        drawline(lim)
+        separater(col/4, name_array[i] + " Title", "Path")
+        separater(col/4, "", path_array[i])
+        drawline(lim)
+        for lines in query:
+            if WEBLINK:
+                lines[1] = "https://www.exploit-db.com/" + \
+                    lines[1][:lines[1].index("/")] + "/" + lines[2]
+            if COLOUR:
+                for term in terms:
+                    lines[0] = highlightTerm(lines[0], term)
+                    lines[1] = highlightTerm(lines[1], term)
+            if EDBID:
+                # made this change so that ids get less display space
+                separater(int(col * 0.8), lines[0], lines[1])
+            else:
+                separater(lim, lines[0], lines[1])
+        drawline(lim)
+
+
 def nmapxml(file):
     # Read XML file
 
