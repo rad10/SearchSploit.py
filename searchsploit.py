@@ -140,12 +140,40 @@ def update():
 
 def drawline():
     rows, cols = os.popen("stty size").read().split()
-    print(rows, cols)
     line = ""
-    print(cols)
     for i in range(int(cols)):
         line += "-"
     print(line)
+
+
+def drawline(lim):
+    line = ""
+    col = int(os.popen("stty size").read().split()[1])
+    for i in range(lim):
+        line += "-"
+    line += "+"
+    while len(line) < col:
+        line += "-"
+    print(line)
+
+
+def separater(line1, line2):
+    print(line1 + " | " + line2)
+
+
+def separater(lim, line1, line2):
+    if (len(line1) >= lim):
+        line1 = line1[:lim-1]
+    while len(line1) <= lim:
+        line1 += " "
+    if '\033[91m' in line1 and '\033[0m' not in line1:
+        line1 += '\033[0m'
+    col = int(os.popen("stty size").read().split()[1])
+    if(len(line2) >= col-lim):
+        line2 = line2[:lim-1]
+    if '\033[91m' in line2 and '\033[0m' not in line2:
+        line2 += '\033[0m'
+    print(line1 + " | " + line2)
 
 
 def validTerm(argsList):
