@@ -205,3 +205,39 @@ def highlightTerm(line, term):
     return line
 
 
+def searchdb(path="", terms=[], cols=[]):
+    searchTerms = []
+    tmphold = []
+    db = open(path, "r").read().split('\n')
+    for lines in db:
+        for term in terms:
+            if not term in lines:
+                continue
+        else:
+            for i in cols:
+                space = lines.split(",")
+                tmphold.append(space[i])
+            searchTerms.append(tmphold)
+            tmphold = []
+    return searchTerms
+
+
+def searchdb(path="", terms=[], cols=[], lim=-1):
+    searchTerms = []
+    tmphold = []
+    db = open(path, "r").read().split('\n')
+    for lines in db:
+        for term in terms:
+            if term not in lines.lower():
+                break
+        else:
+            for i in cols:
+                space = lines.split(",")
+                tmphold.append(space[i])
+            searchTerms.append(tmphold)
+            tmphold = []
+        if(lim != -1 and len(searchTerms) >= lim):
+            break
+    return searchTerms
+
+
