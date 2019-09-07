@@ -179,11 +179,16 @@ def separater(lim, line1, line2):
 def validTerm(argsList):
     invalidTerms = ["microsoft", "microsoft windows", "apache", "ftp",
                     "http", "linux", "net", "network", "oracle", "ssh", "unknown"]
+    argsList.sort()
     for i in range(len(argsList)):
         if (argsList[i] in invalidTerms):
             argsList.pop(i)
             # Issues, return with something
             print(
                 "[-] Skipping term: %s   (Term is too general. Please re-search manually:", i)
+    for i in range(len(argsList)-1):
+        if (argsList[i] == argsList[i + 1]):
+            argsList.pop(i)
+            --i
     return argsList
 
