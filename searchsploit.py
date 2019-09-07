@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from sys import argv
 import os
+from bs4 import BeautifulSoup
 
 # Default options
 CLIPBOARD = False
