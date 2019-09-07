@@ -192,3 +192,16 @@ def validTerm(argsList):
             --i
     return argsList
 
+
+def highlightTerm(line, term):
+    try:
+        part1 = line[:line.lower().index(term)]
+        part2 = line[line.lower().index(
+            term): line.lower().index(term) + len(term)]
+        part3 = line[line.lower().index(term) + len(term):]
+        line = part1 + '\033[91m' + part2 + '\033[0m' + part3
+    except:
+        line = line
+    return line
+
+
