@@ -367,3 +367,36 @@ def findExploit(id):
             return i, exploit
 
 
+def path(id):
+    file, exploit = findExploit(id)
+    return path_array[file] + "/" + exploit[1]
+
+
+def mirror(id):
+    ind, exploit = findExploit(id)
+    absfile = path_array[ind]
+
+    currDir = os.getcwd()
+    inp = open(absfile + "/" + exploit[1], "rb").read()
+    out = open(currDir + "/" + exploit[1].split("/")[-1], "wb")
+    out.write(inp)
+    return
+
+
+def examine(id):
+    ind, exploit = findExploit(id)
+    if exploit[1].split(".")[1] == "pdf":
+        os.system("firefox " + path_array[ind] + "/" + exploit[1])
+    else:
+        os.system("pager " + path_array[ind] + "/" + exploit[1])
+    print("[EDBID]:"+exploit[0])
+    print("[Exploit]:" + exploit[2])
+    print("[Path]:" + path_array[ind] + "/" + exploit[1])
+    print("[URL]:https://www.exploit-db.com/" +
+          exploit[1].split("/")[0] + "/" + exploit[0])
+    print("[Date]:" + exploit[3])
+    print("[Author]:" + exploit[4])
+    print("[Type]:" + exploit[5])
+    print("[Platform]:" + exploit[6])
+    print("[Port]:" + exploit[7])
+
