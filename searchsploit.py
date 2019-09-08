@@ -284,6 +284,8 @@ def searchsploitout():
         if EDBID:
             query = searchdb(path_array[i] + "/" +
                              files_array[i], terms, [2, 0])
+        elif TITLE:
+            query = searchdb(path_array[i] + "/" + files_array[i], terms, [2])
         elif WEBLINK:
             query = searchdb(path_array[i] + "/" +
                              files_array[i], terms, [2, 1, 0])
