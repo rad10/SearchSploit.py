@@ -59,7 +59,7 @@ def scrapeRC():
     for i in settings:
         if(i == "" or i[0] == "#"):
             continue
-        divider = i.split(" ")
+        divider = i[:len(i)-2].split("+=(\"")
         if divider[0] == "files_array":
             files_array.append(divider[1])
         elif divider[0] == "name_array":
