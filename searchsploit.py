@@ -400,3 +400,52 @@ def examine(id):
     print("[Platform]:" + exploit[6])
     print("[Port]:" + exploit[7])
 
+
+def run():
+    if (len(argv) == 1):
+        usage()
+        return
+    args = argv[1:]
+    for i in range(1, len(argv[1:]) + 1):
+        if (argv[i] == "-h" or argv[i] == "--help"):
+            usage()
+            return
+        elif (argv[i] == "-j" or argv[i] == "--json"):
+            global JSON
+            JSON = True
+        elif (argv[i] == "-m" or argv[i] == "--mirror"):
+            mirror(argv[i + 1])
+            return
+        elif(argv[i] == "-o" or argv[i] == "--overflow"):
+            global OVERFLOW
+            OVERFLOW = True
+        elif(argv[i] == "-p" or argv[i] == "--path"):
+            path(argv[i + 1])
+            return
+        elif(argv[i] == "-t"or argv[i] == "--title"):
+            global TITLE
+            TITLE = True
+        elif(argv[i] == "-u"or argv[i] == "--update"):
+            update()
+            return
+        elif(argv[i] == "-w"or argv[i] == "--www"):
+            global WEBLINK
+            WEBLINK = True
+        elif(argv[i] == "-x"or argv[i] == "--examine"):
+            examine(argv[i + 1])
+            return
+        elif(argv[i] == "--colour"):
+            global COLOUR
+            COLOUR = False
+        elif(argv[i] == "--id"):
+            global EDBID
+            EDBID = True
+        elif(argv[i] == "--nmap"):
+            nmapxml(argv[i+1])
+            return
+        else:
+            terms.append(argv[i])
+    searchsploitout()
+
+
+run()
