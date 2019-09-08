@@ -349,3 +349,21 @@ def nmapxml(file):
     validTerm(terms)
 
 
+def cpFromDb(path, id):
+    db = open(path, "r").read().split('\n')
+    for lines in db:
+        if lines.split(",")[0] == str(id):
+            return lines.split(",")
+    return []
+
+
+def findExploit(id):
+    exploit = []
+    for i in range(len(files_array)):
+        exploit = cpFromDb(path_array[i] + "/" + files_array[i], id)
+        if exploit == []:
+            continue
+        else:
+            return i, exploit
+
+
