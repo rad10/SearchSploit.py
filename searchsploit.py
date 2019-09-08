@@ -189,6 +189,7 @@ def separater(lim, line1, line2):
         line2 = line2[:lim-1]
     if '\033[91m' in line2 and '\033[0m' not in line2:
         line2 += '\033[0m'
+
     print(line1 + " | " + line2)
 
 
@@ -259,20 +260,6 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
 
 def searchsploitout():
     # ## Used in searchsploitout/nmap's XML
-
-    # if(len(argv) == 1):
-        # return
-    args.append("-t")
-    if (JSON):
-        args.append("--json")
-    if(OVERFLOW):
-        args.append("--overflow")
-    if(WEBLINK):
-        args.append("--www")
-    if(COLOUR):
-        args.append("--colour")
-    if(EDBID):
-        args.append("--id")
 
     # xx validating terms
     validTerm(terms)
@@ -351,6 +338,8 @@ def nmapxml(file):
             terms.append(service.get("product"))
             terms.append(service.get("version"))
     validTerm(terms)
+
+# Functions for individual id manipulation
 
 
 def cpFromDb(path, id):
