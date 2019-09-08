@@ -176,7 +176,6 @@ def drawline():
 
 def drawline(lim):
     line = ""
-    col = int(os.popen("stty size").read().split()[1])
     for i in range(lim):
         line += "-"
     line += "+"
@@ -236,7 +235,7 @@ def highlightTerm(line, term):
 def searchdb(path="", terms=[], cols=[]):
     searchTerms = []
     tmphold = []
-    db = open(path, "r").read().split('\n')
+    db = open(path, "r", encoding="utf8").read().split('\n')
     for lines in db:
         for term in terms:
             if not term in lines:
@@ -253,7 +252,7 @@ def searchdb(path="", terms=[], cols=[]):
 def searchdb(path="", terms=[], cols=[], lim=-1):
     searchTerms = []
     tmphold = []
-    db = open(path, "r").read().split('\n')
+    db = open(path, "r", encoding="utf8").read().split('\n')
     for lines in db:
         for term in terms:
             if term not in lines.lower():
@@ -353,7 +352,7 @@ def nmapxml(file):
 
 
 def cpFromDb(path, id):
-    db = open(path, "r").read().split('\n')
+    db = open(path, "r", encoding="utf8").read().split('\n')
     for lines in db:
         if lines.split(",")[0] == str(id):
             return lines.split(",")
