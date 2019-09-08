@@ -36,6 +36,14 @@ CASE_TAG_GREP = "-i"
 CASE_TAG_FGREP = "tolower"
 AWK_SEARCH = ""
 
+#get column length
+try:
+    COL = int(os.get_terminal_size()[0])
+except:
+    try:
+        COL = int(os.get_terminal_size(0)[0])
+    except:
+        COL = int(os.get_terminal_size(1)[0])
 
 terms = []
 args = []
@@ -160,9 +168,8 @@ def update():
 
 
 def drawline():
-    rows, cols = os.popen("stty size").read().split()
     line = ""
-    for i in range(int(cols)):
+    for i in range(int(COL)):
         line += "-"
     print(line)
 
@@ -173,7 +180,7 @@ def drawline(lim):
     for i in range(lim):
         line += "-"
     line += "+"
-    while len(line) < col:
+    while len(line) < COL:
         line += "-"
     print(line)
 
@@ -189,8 +196,7 @@ def separater(lim, line1, line2):
         line1 += " "
     if '\033[91m' in line1 and '\033[0m' not in line1:
         line1 += '\033[0m'
-    col = int(os.popen("stty size").read().split()[1])
-    if(len(line2) >= col-lim):
+    if(len(line2) >= COL-lim):
         line2 = line2[:lim-1]
     if '\033[91m' in line2 and '\033[0m' not in line2:
         line2 += '\033[0m'
@@ -273,8 +279,7 @@ def searchsploitout():
         return
 
     # xx building terminal look
-    col = int(os.popen("stty size").read().split()[1])
-    lim = int((col - 3)/2)
+    lim = int((COL - 3)/2)
     query = []
     for i in range(len(files_array)):
         if EDBID:
@@ -293,8 +298,8 @@ def searchsploitout():
             print(name_array[i] + ": No Results")
             continue
         drawline(lim)
-        separater(col/4, name_array[i] + " Title", "Path")
-        separater(col/4, "", path_array[i])
+        separater(COL/4, name_array[i] + " Title", "Path")
+        separater(COL/4, "", path_array[i])
         drawline(lim)
         if TITLE:
         for lines in query:
@@ -313,7 +318,7 @@ def searchsploitout():
                     lines[1] = highlightTerm(lines[1], term)
             if EDBID:
                 # made this change so that ids get less display space
-                separater(int(col * 0.8), lines[0], lines[1])
+                    separater(int(COL * 0.8), lines[0], lines[1])
             else:
                 separater(lim, lines[0], lines[1])
         drawline(lim)
