@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
-from sys import argv
+from sys import argv, exit
 import os
-from bs4 import BeautifulSoup
 
+try:
+from bs4 import BeautifulSoup
+except:
+    print("Error: you need to have beautifulsoup installed to properly use this program")
+    print("To install beautifulsoup, run 'pip install beautifulsoup4' in your commandline.")
+    exit()
 
 # settings
 SETTINGS_LOC = ""
