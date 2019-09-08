@@ -102,3 +102,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+workspace # folder where i tinker on new things
+
+# Ignore settings file for others use
+.searchsploit_rc
