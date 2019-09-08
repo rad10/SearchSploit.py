@@ -37,7 +37,7 @@ args = []
 
 # RC info
 
-progname = argv[0]
+progname = argv[0].split("/")[-1]
 files_array = []
 name_array = []
 path_array = []
@@ -443,6 +443,9 @@ def run():
             return
         else:
             terms.append(argv[i])
+    if terms == []:
+        usage()
+        return
     searchsploitout()
 
 
