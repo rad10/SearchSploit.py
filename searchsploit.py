@@ -21,6 +21,8 @@ OVERFLOW = False
 WEBLINK = False
 TITLE = False
 IGNORE = False
+CASE = False
+COL = 0
 
 # get column length
 try:
@@ -203,21 +205,21 @@ def separater(lim, line1, line2):
 
 def validTerm(argsList):
     invalidTerms = ["microsoft", "microsoft windows", "apache", "ftp",
-                    "http", "linux", "net", "network", "oracle", "ssh", "ms-wbt-server", "unknown", "None"]
-    dudTerms = ["unknown", "None"]
+                    "http", "linux", "net", "network", "oracle", "ssh", "ms-wbt-server", "unknown", "none"]
+    dudTerms = ["unknown", "none"]
     if EXACT:
         return argsList
     argsList.sort()
     argslen = len(argsList)
     for i in range(argslen):
-        if (argsList[argslen-i-1] in dudTerms):
+        if (argsList[argslen-i-1].lower() in dudTerms):
             argsList.pop(argslen-i-1)
-        elif (argsList[argslen-i-1] in invalidTerms and not IGNORE):
+        elif (argsList[argslen-i-1].lower() in invalidTerms and not IGNORE):
             print(
                 "[-] Skipping term: " + argsList[argslen-i-1] + "   (Term is too general. Please re-search manually:")
             argsList.pop(argslen-i-1)
             # Issues, return with something
-        else:
+        elif not CASE:
             argsList[argslen-i-1] = argsList[argslen-i-1].lower()
     argsList.sort()
     argslen = len(argsList)
@@ -235,6 +237,7 @@ def validTerm(argsList):
 
 def highlightTerm(line, term):
     try:
+        term = term.lower()
         part1 = line[:line.lower().index(term)]
         part2 = line[line.lower().index(
             term): line.lower().index(term) + len(term)]
@@ -260,7 +263,13 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
         for term in terms:
                 if TITLE:
                     line = lines.split(",")[2]
-                    if term not in line.lower():
+                    if CASE:
+                        if term not in line:
+                            break
+                    elif term not in line.lower():
+                        break
+                elif CASE:
+                    if term not in lines:
                 break
                 elif term not in lines.lower():
                     break
@@ -412,6 +421,9 @@ def run():
         if (argv[i] == "-h" or argv[i] == "--help"):
             usage()
             return
+        elif (argv[i] == "-c" or argv[i] == "--case"):
+            global CASE
+            CASE = True
         elif (argv[i] == "-e" or argv[i] == "--exact"):
             global EXACT
             EXACT = True
