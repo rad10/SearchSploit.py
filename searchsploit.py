@@ -13,28 +13,14 @@ except:
 SETTINGS_LOC = ""
 
 # Default options
-CLIPBOARD = False
 COLOUR = True
 EDBID = False
 EXACT = False
-EXAMINE = False
-FILEPATH = True
-GETPATH = False
 JSON = False
-MIRROR = False
 OVERFLOW = False
-SCASE = False
-VERBOSE = False
 WEBLINK = False
-XML = False
 TITLE = False
-COLOUR_TAG = ""
-TAGS = ""
-SEARCH = ""
-EXCLUDE = ""
-CASE_TAG_GREP = "-i"
-CASE_TAG_FGREP = "tolower"
-AWK_SEARCH = ""
+IGNORE = False
 
 # get column length
 try:
