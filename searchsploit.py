@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 from sys import argv
 import os
 from bs4 import BeautifulSoup
