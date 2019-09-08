@@ -201,18 +201,31 @@ def separater(lim, line1, line2):
 
 def validTerm(argsList):
     invalidTerms = ["microsoft", "microsoft windows", "apache", "ftp",
-                    "http", "linux", "net", "network", "oracle", "ssh", "unknown"]
+                    "http", "linux", "net", "network", "oracle", "ssh", "ms-wbt-server", "unknown", "None"]
+    dudTerms = ["unknown", "None"]
     argsList.sort()
-    for i in range(len(argsList)):
-        if (argsList[i] in invalidTerms):
-            argsList.pop(i)
-            # Issues, return with something
+    argslen = len(argsList)
+    for i in range(argslen):
+        if (argsList[argslen-i-1] in dudTerms):
+            argsList.pop(argslen-i-1)
+        elif (argsList[argslen-i-1] in invalidTerms and not IGNORE):
             print(
-                "[-] Skipping term: %s   (Term is too general. Please re-search manually:", i)
-    for i in range(len(argsList)-1):
-        if (argsList[i] == argsList[i + 1]):
-            argsList.pop(i)
-            --i
+                "[-] Skipping term: " + argsList[argslen-i-1] + "   (Term is too general. Please re-search manually:")
+            argsList.pop(argslen-i-1)
+            # Issues, return with something
+        else:
+            argsList[argslen-i-1] = argsList[argslen-i-1].lower()
+    argsList.sort()
+    argslen = len(argsList)
+    for i in range(argslen-1):
+        if (argsList[argslen-i-2] == argsList[argslen-i-1]):
+            argsList.pop(argslen-i-1)
+        # what to do if the list ends up empty afterwards
+    if (len(argsList) == 0):
+        print("Looks like those terms were too generic.")
+        print("if you want to search with them anyway, run the command again with the -i arguement")
+        exit()
+
     return argsList
 
 
