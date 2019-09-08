@@ -3,7 +3,7 @@ from sys import argv, exit
 import os
 
 try:
-from bs4 import BeautifulSoup
+    from bs4 import BeautifulSoup
 except:
     print("Error: you need to have beautifulsoup installed to properly use this program")
     print("To install beautifulsoup, run 'pip install beautifulsoup4' in your commandline.")
@@ -36,7 +36,7 @@ CASE_TAG_GREP = "-i"
 CASE_TAG_FGREP = "tolower"
 AWK_SEARCH = ""
 
-#get column length
+# get column length
 try:
     COL = int(os.get_terminal_size()[0])
 except:
@@ -87,13 +87,15 @@ def scrapeRC():
                 git_user = divider[1]
     for i in range(len(files_array)):
         try:
-            open(path_array[i] + "/" + files_array[i], "r", encoding="utf8").read()
+            open(path_array[i] + "/" + files_array[i],
+                 "r", encoding="utf8").read()
         except:
             files_array.pop(i)
             name_array.pop(i)
             path_array.pop(i)
             git_array.pop(i)
             --i
+
 
 scrapeRC()
 # Usage info
@@ -309,25 +311,25 @@ def searchsploitout():
         separater(COL/4, "", path_array[i])
         drawline(lim)
         if TITLE:
-        for lines in query:
+            for lines in query:
                 if COLOUR:
                     for term in terms:
                         lines[0] = highlightTerm(lines[0], term)
                 print(lines[0])
         else:
             for lines in query:
-            if WEBLINK:
-                lines[1] = "https://www.exploit-db.com/" + \
-                    lines[1][:lines[1].index("/")] + "/" + lines[2]
-            if COLOUR:
-                for term in terms:
-                    lines[0] = highlightTerm(lines[0], term)
-                    lines[1] = highlightTerm(lines[1], term)
-            if EDBID:
-                # made this change so that ids get less display space
+                if WEBLINK:
+                    lines[1] = "https://www.exploit-db.com/" + \
+                        lines[1][:lines[1].index("/")] + "/" + lines[2]
+                if COLOUR:
+                    for term in terms:
+                        lines[0] = highlightTerm(lines[0], term)
+                        lines[1] = highlightTerm(lines[1], term)
+                if EDBID:
+                    # made this change so that ids get less display space
                     separater(int(COL * 0.8), lines[0], lines[1])
-            else:
-                separater(lim, lines[0], lines[1])
+                else:
+                    separater(lim, lines[0], lines[1])
         drawline(lim)
 
 
