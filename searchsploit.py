@@ -205,6 +205,8 @@ def validTerm(argsList):
     invalidTerms = ["microsoft", "microsoft windows", "apache", "ftp",
                     "http", "linux", "net", "network", "oracle", "ssh", "ms-wbt-server", "unknown", "None"]
     dudTerms = ["unknown", "None"]
+    if EXACT:
+        return argsList
     argsList.sort()
     argslen = len(argsList)
     for i in range(argslen):
@@ -246,6 +248,12 @@ def highlightTerm(line, term):
 def searchdb(path="", terms=[], cols=[], lim=-1):
     searchTerms = []
     tmphold = []
+    if EXACT:
+        tmpstr = str(terms[0])
+        for i in range(1, len(terms)):
+            tmpstr += " " + terms[i]
+        terms.clear()
+        terms.append(tmpstr)
     db = open(path, "r", encoding="utf8").read().split('\n')
     for lines in db:
         if (lines != ""):
