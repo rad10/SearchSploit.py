@@ -372,7 +372,7 @@ def findExploit(id):
 
 def path(id):
     file, exploit = findExploit(id)
-    return path_array[file] + "/" + exploit[1]
+    print(path_array[file] + "/" + exploit[1])
 
 
 def mirror(id):
