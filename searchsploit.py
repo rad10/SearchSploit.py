@@ -18,6 +18,7 @@ SCASE = False
 VERBOSE = False
 WEBLINK = False
 XML = False
+TITLE = False
 COLOUR_TAG = ""
 TAGS = ""
 SEARCH = ""
