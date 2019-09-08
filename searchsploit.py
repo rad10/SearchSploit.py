@@ -3,6 +3,10 @@ from sys import argv
 import os
 from bs4 import BeautifulSoup
 
+
+# settings
+SETTINGS_LOC = ""
+
 # Default options
 CLIPBOARD = False
 COLOUR = True
