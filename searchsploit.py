@@ -335,30 +335,32 @@ def searchsploitout():
 
 
 def nmapxml(file):
+    global terms
     # Read XML file
 
     # ## Feedback to enduser
-    print("[i] Reading: " + file)
-
-    # hosts = []  # list of hosts and their properties
-    # tmpip = ""
-    # tmphostname = ""
-    # tmpname = ""
-    # tmpservice = ""
+    print("[i] Reading: " + highlightTerm(str(file), str(file)))
+    tmpaddr = ""
+    tmpname = ""
     # ## Read in XMP (IP, name, service, and version)
     # xx This time with beautiful soup!
     xmlsheet = BeautifulSoup(open(file, "r").read(), "lxml")
 
     hostsheet = xmlsheet.find_all("host")
     for host in hostsheet:
-        # tmpip = host.find("address").get("addr")
-        # tmphostname = host.find("hostname").get("name")
+        tmpaddr = host.find("address").get("addr")
+        tmpaddr = highlightTerm(tmpaddr, tmpaddr)
+        tmpname = host.find("hostname").get("name")
+        tmpname = highlightTerm(tmpname, tmpname)
+        print("Finding exploits for " + tmpaddr + " (" + tmpname + ")")
         for service in host.find_all("service"):
-            terms.append(service.get("name"))
-            terms.append(service.get("product"))
-            terms.append(service.get("version"))
+            terms.append(str(service.get("name")))
+            terms.append(str(service.get("product")))
+            terms.append(str(service.get("version")))
     validTerm(terms)
-
+            print("Searching terms:", terms)
+            searchsploitout()
+            terms = []
 # Functions for individual id manipulation
 
 
