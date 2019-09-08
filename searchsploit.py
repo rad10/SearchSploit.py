@@ -300,7 +300,14 @@ def searchsploitout():
         separater(col/4, name_array[i] + " Title", "Path")
         separater(col/4, "", path_array[i])
         drawline(lim)
+        if TITLE:
         for lines in query:
+                if COLOUR:
+                    for term in terms:
+                        lines[0] = highlightTerm(lines[0], term)
+                print(lines[0])
+        else:
+            for lines in query:
             if WEBLINK:
                 lines[1] = "https://www.exploit-db.com/" + \
                     lines[1][:lines[1].index("/")] + "/" + lines[2]
