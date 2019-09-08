@@ -278,7 +278,7 @@ def searchsploitout():
 
     # xx building terminal look
     col = int(os.popen("stty size").read().split()[1])
-    lim = (col - 3)/2
+    lim = int((col - 3)/2)
     query = []
     for i in range(len(files_array)):
         if EDBID:
