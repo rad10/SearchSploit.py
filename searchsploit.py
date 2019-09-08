@@ -43,7 +43,14 @@ git_array = []
 
 def scrapeRC():
     divider = []
-    settings = open(".searchsploit_rc").read().split("\n")
+
+    try:
+        if(SETTINGS_LOC != ""):
+            settings = open(SETTINGS_LOC, "r").read().split("\n")
+        else:
+            settings = open(".searchsploit_rc", "r").read().split("\n")
+    except:
+        settings = open("~/.searchsploit_rc", "r").read().split("\n")
     for i in settings:
         if(i == "" or i[0] == "#"):
             continue
