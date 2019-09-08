@@ -85,7 +85,15 @@ def scrapeRC():
                 git_user = ""
             else:
                 git_user = divider[1]
-
+    for i in range(len(files_array)):
+        try:
+            open(path_array[i] + "/" + files_array[i], "r", encoding="utf8").read()
+        except:
+            files_array.pop(i)
+            name_array.pop(i)
+            path_array.pop(i)
+            git_array.pop(i)
+            --i
 
 scrapeRC()
 # Usage info
