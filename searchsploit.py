@@ -248,9 +248,14 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
     tmphold = []
     db = open(path, "r", encoding="utf8").read().split('\n')
     for lines in db:
+        if (lines != ""):
         for term in terms:
-            if term not in lines.lower():
+                if TITLE:
+                    line = lines.split(",")[2]
+                    if term not in line.lower():
                 break
+                elif term not in lines.lower():
+                    break
         else:
             for i in cols:
                 space = lines.split(",")
@@ -278,8 +283,6 @@ def searchsploitout():
         if EDBID:
             query = searchdb(path_array[i] + "/" +
                              files_array[i], terms, [2, 0])
-        elif TITLE:
-            query = searchdb(path_array[i] + "/" + files_array[i], terms, [2])
         elif WEBLINK:
             query = searchdb(path_array[i] + "/" +
                              files_array[i], terms, [2, 1, 0])
@@ -294,13 +297,6 @@ def searchsploitout():
         separater(COL/4, name_array[i] + " Title", "Path")
         separater(COL/4, "", path_array[i])
         drawline(lim)
-        if TITLE:
-            for lines in query:
-                if COLOUR:
-                    for term in terms:
-                        lines[0] = highlightTerm(lines[0], term)
-                print(lines[0])
-        else:
             for lines in query:
                 if WEBLINK:
                     lines[1] = "https://www.exploit-db.com/" + \
