@@ -20,7 +20,7 @@ TITLE = False
 IGNORE = False
 CASE = False
 COL = 0
-STDIN = "" # made to hold standard input for multiple functions
+STDIN = ""  # made to hold standard input for multiple functions
 
 # get column length
 try:
@@ -546,10 +546,13 @@ def nmapgrep(file=""):
         else:
             nmatrix[lines] = nmatrix[lines].split("\t")[:-1]
             nmatrix[lines][0] = nmatrix[lines][0][6:].split(" ")
-            nmatrix[lines][0][1] = nmatrix[lines][0][1][1:-1] if (len(nmatrix[lines][0][1]) > 2) else "" # pull hostname out of parenthesis
+            # pull hostname out of parenthesis
+            nmatrix[lines][0][1] = nmatrix[lines][0][1][1:-
+                                                        1] if (len(nmatrix[lines][0][1]) > 2) else ""
             nmatrix[lines][1] = nmatrix[lines][1][7:].split(", ")
             for j in range(len(nmatrix[lines][1])):
-                nmatrix[lines][1][j] = nmatrix[lines][1][j].replace("/", " ").split()[3:]
+                nmatrix[lines][1][j] = nmatrix[lines][1][j].replace(
+                    "/", " ").split()[3:]
 
     # Outputing results from matrix
     for host in nmatrix:
@@ -574,8 +577,8 @@ def path(id):
     """ Function used to run the path arguement
     """
     try:
-    file, exploit = findExploit(id)
-    print(path_array[file] + "/" + exploit[1])
+        file, exploit = findExploit(id)
+        print(path_array[file] + "/" + exploit[1])
     except TypeError:
         print("%s does not exist. Please double check that this is the correct id." % id)
 
@@ -584,7 +587,7 @@ def mirror(id):
     """ Function used to mirror exploits
     """
     try:
-    ind, exploit = findExploit(id)
+        ind, exploit = findExploit(id)
     except TypeError:
         print("%s does not exist. Please double check that this is the correct id." % id)
         return
@@ -601,7 +604,7 @@ def examine(id):
     """ Function used to run examine arguement
     """
     try:
-    ind, exploit = findExploit(id)
+        ind, exploit = findExploit(id)
     except TypeError:
         print("%s does not exist. Please double check that this is the correct id." % id)
         return
