@@ -243,23 +243,6 @@ def highlightTerm(line, term):
     return line
 
 
-def searchdb(path="", terms=[], cols=[]):
-    searchTerms = []
-    tmphold = []
-    db = open(path, "r", encoding="utf8").read().split('\n')
-    for lines in db:
-        for term in terms:
-            if not term in lines:
-                continue
-        else:
-            for i in cols:
-                space = lines.split(",")
-                tmphold.append(space[i])
-            searchTerms.append(tmphold)
-            tmphold = []
-    return searchTerms
-
-
 def searchdb(path="", terms=[], cols=[], lim=-1):
     searchTerms = []
     tmphold = []
