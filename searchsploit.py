@@ -108,6 +108,8 @@ def usage():
         "   -c, --case     [Term]      Perform a case-sensitive search (Default is inSEnsITiVe).")
     print(
         "   -e, --exact    [Term]      Perform an EXACT match on exploit title (Default is AND) [Implies \"-t\"].")
+    print(
+        " -i, --ignore    [Term]     Adds any redundant term in despite it possibly giving false positives.")
     print("   -h, --help                 Show this help screen.")
     print("   -j, --json     [Term]      Show result in JSON format.")
     print(
@@ -421,6 +423,12 @@ def run():
         if (argv[i] == "-h" or argv[i] == "--help"):
             usage()
             return
+        elif (argv[i] == "-e" or argv[i] == "--exact"):
+            global EXACT
+            EXACT = True
+        elif (argv[i] == "-i" or argv[i] == "--ignore"):
+            global IGNORE
+            IGNORE = True
         elif (argv[i] == "-j" or argv[i] == "--json"):
             global JSON
             JSON = True
