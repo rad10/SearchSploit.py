@@ -1,6 +1,4 @@
 @echo off
-set mycd = %cd%
 set pythonscript = ""
-cd %pythonscript%
-python searchsploit.py %*
-cd %mycd%
+:: put in the exact directory where youre storing your script. you can place this in a folder in path and youll be able to run it like on linux
+python "%pythonscript%\searchsploit.py" %*
