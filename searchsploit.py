@@ -461,7 +461,7 @@ def examine(id):
     """
     ind, exploit = findExploit(id)
     if exploit[1].split(".")[1] == "pdf":
-        os.system("firefox " + path_array[ind] + "/" + exploit[1])
+        os.system("firefox file:///" + path_array[ind] + "/" + exploit[1])
     else:
         os.system("pager " + path_array[ind] + "/" + exploit[1])
     print("[EDBID]:"+exploit[0])
