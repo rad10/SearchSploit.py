@@ -16,7 +16,6 @@ SETTINGS_LOC = ""
 # rest of the settings from anywhere
 
 
-
 # Default options
 COLOUR = True
 EDBID = False
@@ -38,16 +37,16 @@ except:
     except:
         COL = int(os.get_terminal_size(1)[0])
 
-terms = [] # global array that contains all search terms
+terms = []  # global array that contains all search terms
 
 
 # RC info
 
 progname = argv[0].split("/")[-1]
-files_array = [] # Array options with file names
-name_array = [] # Array options with database names
-path_array = [] # Array options with paths to database files
-git_array = [] # Array options with the git repo to update the databases
+files_array = []  # Array options with file names
+name_array = []  # Array options with database names
+path_array = []  # Array options with paths to database files
+git_array = []  # Array options with the git repo to update the databases
 
 
 def scrapeRC():
@@ -56,20 +55,22 @@ def scrapeRC():
     divider = []
 
     try:
-        if(SETTINGS_LOC != ""): # Checks if the variable is empty
+        if(SETTINGS_LOC != ""):  # Checks if the variable is empty
             settings = open(SETTINGS_LOC, "r").read().split("\n")
         else:
             settings = open(".searchsploit_rc", "r").read().split("\n")
     except:
         try:
-            settings = open(os.path.expanduser("~").replace("\\","/") + "/.searchsploit_rc", "r").read().split("\n")
+            settings = open(os.path.expanduser("~").replace(
+                "\\", "/") + "/.searchsploit_rc", "r").read().split("\n")
             # Checks for home directory in linux/mac
         except:
-            settings = open(os.getenv("userprofile").replace("\\","/") + "/.searchsploit_rc", "r").read().split("\n")
+            settings = open(os.getenv("userprofile").replace(
+                "\\", "/") + "/.searchsploit_rc", "r").read().split("\n")
             # Checks for home directory in windows
     for i in settings:
         if(i == "" or i[0] == "#"):
-            continue # Ignores lines that are empty or are just comments
+            continue  # Ignores lines that are empty or are just comments
         divider = i[:len(i)-2].split("+=(\"")
         if divider[0] == "files_array":
             files_array.append(divider[1])
@@ -92,6 +93,8 @@ def scrapeRC():
             path_array.pop(larray - i - 1)
             git_array.pop(larray - i - 1)
             --i
+
+
 scrapeRC()
 
 
@@ -158,6 +161,8 @@ def usage():
     exit(2)
 
 # Update database check
+
+
 def update():
     """ This function is used to update all the databases via github (because github is the best update system for databases this size)
     """
@@ -187,6 +192,7 @@ def drawline():
         line += "-"
     print(line)
 
+
 def drawline(lim):
     """ Draws a line in the terminal.\n
     @lim: column where the border is suppossed to be
@@ -198,6 +204,7 @@ def drawline(lim):
     while len(line) < COL:
         line += "-"
     print(line)
+
 
 def highlightTerm(line, term):
     """ Takes a line and highlights the given arguement
@@ -213,10 +220,12 @@ def highlightTerm(line, term):
         line = line
     return line
 
+
 def separater(line1, line2):
     """ Splits the two texts into database boxes
     """
     print(line1 + " | " + line2)
+
 
 def separater(lim, line1, line2):
     """ Splits the two texts to fit perfectly within the terminal width
@@ -249,6 +258,7 @@ def cpFromDb(path, id):
             return lines.split(",")
     return []
 
+
 def findExploit(id):
     """ This Function uses cpFromDB to iterate through all known databases and return exploit and the database it was found in\n
     @id: EDBID used to search all known databases\n
@@ -261,6 +271,7 @@ def findExploit(id):
             continue
         else:
             return i, exploit
+
 
 def validTerm(argsList):
     """ Takes the terms inputed and returns an organized list with no repeats and no poor word choices
@@ -294,6 +305,7 @@ def validTerm(argsList):
         exit()
 
     return argsList
+
 
 def searchdb(path="", terms=[], cols=[], lim=-1):
     """ Searches for terms in the database given in path and returns the requested columns of positive matches.\n
@@ -350,8 +362,9 @@ def searchsploitout():
         return
 
     # xx building terminal look
-    lim = int((COL - 3)/2) # the magic number to decide how much space is between the two subjects
-    query = [] # temp variable thatll hold all the results
+    # the magic number to decide how much space is between the two subjects
+    lim = int((COL - 3)/2)
+    query = []  # temp variable thatll hold all the results
     for i in range(len(files_array)):
         if EDBID:
             query = searchdb(path_array[i] + "/" +
@@ -363,15 +376,15 @@ def searchsploitout():
             query = searchdb(path_array[i] + "/" +
                              files_array[i], terms, [2, 1])
 
-        if len(query) == 0: # is the search results came up with nothing
+        if len(query) == 0:  # is the search results came up with nothing
             print(name_array[i] + ": No Results")
             continue
         drawline(lim)
         separater(COL/4, name_array[i] + " Title", "Path")
         separater(COL/4, "", path_array[i])
-        drawline(lim) # display title for every database
+        drawline(lim)  # display title for every database
         for lines in query:
-            if WEBLINK: # if requesting weblinks. shapes the output for urls
+            if WEBLINK:  # if requesting weblinks. shapes the output for urls
                 lines[1] = "https://www.exploit-db.com/" + \
                     lines[1][:lines[1].index("/")] + "/" + lines[2]
             if COLOUR:
@@ -403,19 +416,21 @@ def nmapxml(file):
 
     hostsheet = xmlsheet.find_all("host")
     for host in hostsheet:
-        tmpaddr = host.find("address").get("addr") # made these lines to separate searches by machine
+        # made these lines to separate searches by machine
+        tmpaddr = host.find("address").get("addr")
         tmpaddr = highlightTerm(tmpaddr, tmpaddr)
         tmpname = host.find("hostname").get("name")
         tmpname = highlightTerm(tmpname, tmpname)
-        print("Finding exploits for " + tmpaddr + " (" + tmpname + ")") # print name of machine
+        print("Finding exploits for " + tmpaddr +
+              " (" + tmpname + ")")  # print name of machine
         for service in host.find_all("service"):
             terms.append(str(service.get("name")))
             terms.append(str(service.get("product")))
             terms.append(str(service.get("version")))
             validTerm(terms)
-            print("Searching terms:", terms) # displays terms found by xml
-            searchsploitout() # tests search terms by machine
-            terms = [] # emptys search terms for next search
+            print("Searching terms:", terms)  # displays terms found by xml
+            searchsploitout()  # tests search terms by machine
+            terms = []  # emptys search terms for next search
 
 
 ##########################
@@ -426,6 +441,7 @@ def path(id):
     """
     file, exploit = findExploit(id)
     print(path_array[file] + "/" + exploit[1])
+
 
 def mirror(id):
     """ Function used to mirror exploits
@@ -438,6 +454,7 @@ def mirror(id):
     out = open(currDir + "/" + exploit[1].split("/")[-1], "wb")
     out.write(inp)
     return
+
 
 def examine(id):
     """ Function used to run examine arguement
@@ -461,11 +478,13 @@ def examine(id):
 ##################
 ##  HOOK SCRIPT ##
 ##################
+
+
 def run():
     """ Main function of script. hooks rest of functions
     """
     if (len(argv) == 1):
-        usage() # runs if given no arguements
+        usage()  # runs if given no arguements
         return
     for i in range(1, len(argv[1:]) + 1):
         if (argv[i] == "-h" or argv[i] == "--help"):
@@ -516,8 +535,9 @@ def run():
         else:
             terms.append(argv[i])
     if terms == []:
-        usage() # if no actual terms were made just arguements, then exit
+        usage()  # if no actual terms were made just arguements, then exit
         return
     searchsploitout()
+
 
 run()
