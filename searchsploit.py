@@ -55,7 +55,10 @@ def scrapeRC():
         else:
             settings = open(".searchsploit_rc", "r").read().split("\n")
     except:
-        settings = open("~/.searchsploit_rc", "r").read().split("\n")
+        try:
+            settings = open(os.path.expanduser("~").replace("\\","/") + "/.searchsploit_rc", "r").read().split("\n")
+        except:
+            settings = open(os.getenv("userprofile").replace("\\","/") + "/.searchsploit_rc", "r").read().split("\n")
     for i in settings:
         if(i == "" or i[0] == "#"):
             continue
