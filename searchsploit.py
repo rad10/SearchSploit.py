@@ -262,18 +262,18 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
     for lines in db:
         if (lines != ""):
             for term in terms:
-                    if TITLE:
-                        line = lines.split(",")[2]
-                        if CASE:
-                            if term not in line:
-                                break
-                        elif term not in line.lower():
+                if TITLE:
+                    line = lines.split(",")[2]
+                    if CASE:
+                        if term not in line:
                             break
-                    elif CASE:
-                        if term not in lines:
-                            break
-                    elif term not in lines.lower():
+                    elif term not in line.lower():
                         break
+                elif CASE:
+                    if term not in lines:
+                        break
+                elif term not in lines.lower():
+                    break
             else:
                 for i in cols:
                     space = lines.split(",")
