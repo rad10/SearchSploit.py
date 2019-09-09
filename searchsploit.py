@@ -92,12 +92,10 @@ def scrapeRC():
             path_array.pop(larray - i - 1)
             git_array.pop(larray - i - 1)
             --i
-
-
 scrapeRC()
+
+
 # Usage info
-
-
 def usage():
     """ This function displays the manual for the program and the help function
     """
@@ -159,9 +157,7 @@ def usage():
     print("")
     exit(2)
 
-
 # Update database check
-
 def update():
     """ This function is used to update all the databases via github (because github is the best update system for databases this size)
     """
@@ -180,6 +176,9 @@ def update():
     return
 
 
+######################
+##  DISPLAY TOOLS   ##
+######################
 def drawline():
     """ Draws a line in the terminal.
     """
@@ -187,7 +186,6 @@ def drawline():
     for i in range(int(COL)):
         line += "-"
     print(line)
-
 
 def drawline(lim):
     """ Draws a line in the terminal.\n
@@ -201,12 +199,24 @@ def drawline(lim):
         line += "-"
     print(line)
 
+def highlightTerm(line, term):
+    """ Takes a line and highlights the given arguement
+    """
+    try:
+        term = term.lower()
+        part1 = line[:line.lower().index(term)]
+        part2 = line[line.lower().index(
+            term): line.lower().index(term) + len(term)]
+        part3 = line[line.lower().index(term) + len(term):]
+        line = part1 + '\033[91m' + part2 + '\033[0m' + part3
+    except:
+        line = line
+    return line
 
 def separater(line1, line2):
     """ Splits the two texts into database boxes
     """
     print(line1 + " | " + line2)
-
 
 def separater(lim, line1, line2):
     """ Splits the two texts to fit perfectly within the terminal width
@@ -224,6 +234,33 @@ def separater(lim, line1, line2):
 
     print(line1 + " | " + line2)
 
+
+##############################
+##  DATABASE MANIPULATION   ##
+##############################
+def cpFromDb(path, id):
+    """ Returns database array of search for given id.\n
+    path: absolute path of database\n
+    id: the EDBID that is searched for in database
+    """
+    db = open(path, "r", encoding="utf8").read().split('\n')
+    for lines in db:
+        if lines.split(",")[0] == str(id):
+            return lines.split(",")
+    return []
+
+def findExploit(id):
+    """ This Function uses cpFromDB to iterate through all known databases and return exploit and the database it was found in\n
+    @id: EDBID used to search all known databases\n
+    @return: exploit[], database path
+    """
+    exploit = []
+    for i in range(len(files_array)):
+        exploit = cpFromDb(path_array[i] + "/" + files_array[i], id)
+        if exploit == []:
+            continue
+        else:
+            return i, exploit
 
 def validTerm(argsList):
     """ Takes the terms inputed and returns an organized list with no repeats and no poor word choices
@@ -257,22 +294,6 @@ def validTerm(argsList):
         exit()
 
     return argsList
-
-
-def highlightTerm(line, term):
-    """ Takes a line and highlights the given arguement
-    """
-    try:
-        term = term.lower()
-        part1 = line[:line.lower().index(term)]
-        part2 = line[line.lower().index(
-            term): line.lower().index(term) + len(term)]
-        part3 = line[line.lower().index(term) + len(term):]
-        line = part1 + '\033[91m' + part2 + '\033[0m' + part3
-    except:
-        line = line
-    return line
-
 
 def searchdb(path="", terms=[], cols=[], lim=-1):
     """ Searches for terms in the database given in path and returns the requested columns of positive matches.\n
@@ -395,41 +416,16 @@ def nmapxml(file):
             print("Searching terms:", terms) # displays terms found by xml
             searchsploitout() # tests search terms by machine
             terms = [] # emptys search terms for next search
-# Functions for individual id manipulation
 
 
-def cpFromDb(path, id):
-    """ Returns database array of search for given id.\n
-    path: absolute path of database\n
-    id: the EDBID that is searched for in database
-    """
-    db = open(path, "r", encoding="utf8").read().split('\n')
-    for lines in db:
-        if lines.split(",")[0] == str(id):
-            return lines.split(",")
-    return []
-
-
-def findExploit(id):
-    """ This Function uses cpFromDB to iterate through all known databases and return exploit and the database it was found in\n
-    @id: EDBID used to search all known databases\n
-    @return: exploit[], database path
-    """
-    exploit = []
-    for i in range(len(files_array)):
-        exploit = cpFromDb(path_array[i] + "/" + files_array[i], id)
-        if exploit == []:
-            continue
-        else:
-            return i, exploit
-
-
+##########################
+##  COMMAND FUNCTIONS   ##
+##########################
 def path(id):
     """ Function used to run the path arguement
     """
     file, exploit = findExploit(id)
     print(path_array[file] + "/" + exploit[1])
-
 
 def mirror(id):
     """ Function used to mirror exploits
@@ -442,7 +438,6 @@ def mirror(id):
     out = open(currDir + "/" + exploit[1].split("/")[-1], "wb")
     out.write(inp)
     return
-
 
 def examine(id):
     """ Function used to run examine arguement
@@ -463,7 +458,9 @@ def examine(id):
     print("[Platform]:" + exploit[6])
     print("[Port]:" + exploit[7])
 
-
+##################
+##  HOOK SCRIPT ##
+##################
 def run():
     """ Main function of script. hooks rest of functions
     """
@@ -522,6 +519,5 @@ def run():
         usage() # if no actual terms were made just arguements, then exit
         return
     searchsploitout()
-
 
 run()
