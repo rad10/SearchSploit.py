@@ -260,25 +260,25 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
     db = open(path, "r", encoding="utf8").read().split('\n')
     for lines in db:
         if (lines != ""):
-        for term in terms:
-                if TITLE:
-                    line = lines.split(",")[2]
-                    if CASE:
-                        if term not in line:
+            for term in terms:
+                    if TITLE:
+                        line = lines.split(",")[2]
+                        if CASE:
+                            if term not in line:
+                                break
+                        elif term not in line.lower():
                             break
-                    elif term not in line.lower():
+                    elif CASE:
+                        if term not in lines:
+                            break
+                    elif term not in lines.lower():
                         break
-                elif CASE:
-                    if term not in lines:
-                break
-                elif term not in lines.lower():
-                    break
-        else:
-            for i in cols:
-                space = lines.split(",")
-                tmphold.append(space[i])
-            searchTerms.append(tmphold)
-            tmphold = []
+            else:
+                for i in cols:
+                    space = lines.split(",")
+                    tmphold.append(space[i])
+                searchTerms.append(tmphold)
+                tmphold = []
         if(lim != -1 and len(searchTerms) >= lim):
             break
     return searchTerms
@@ -314,19 +314,19 @@ def searchsploitout():
         separater(COL/4, name_array[i] + " Title", "Path")
         separater(COL/4, "", path_array[i])
         drawline(lim)
-            for lines in query:
-                if WEBLINK:
-                    lines[1] = "https://www.exploit-db.com/" + \
-                        lines[1][:lines[1].index("/")] + "/" + lines[2]
-                if COLOUR:
-                    for term in terms:
-                        lines[0] = highlightTerm(lines[0], term)
-                        lines[1] = highlightTerm(lines[1], term)
-                if EDBID:
-                    # made this change so that ids get less display space
-                    separater(int(COL * 0.8), lines[0], lines[1])
-                else:
-                    separater(lim, lines[0], lines[1])
+        for lines in query:
+            if WEBLINK:
+                lines[1] = "https://www.exploit-db.com/" + \
+                    lines[1][:lines[1].index("/")] + "/" + lines[2]
+            if COLOUR:
+                for term in terms:
+                    lines[0] = highlightTerm(lines[0], term)
+                    lines[1] = highlightTerm(lines[1], term)
+            if EDBID:
+                # made this change so that ids get less display space
+                separater(int(COL * 0.8), lines[0], lines[1])
+            else:
+                separater(lim, lines[0], lines[1])
         drawline(lim)
 
 
@@ -353,7 +353,7 @@ def nmapxml(file):
             terms.append(str(service.get("name")))
             terms.append(str(service.get("product")))
             terms.append(str(service.get("version")))
-    validTerm(terms)
+            validTerm(terms)
             print("Searching terms:", terms)
             searchsploitout()
             terms = []
