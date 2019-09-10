@@ -419,8 +419,11 @@ def nmapxml(file):
         # made these lines to separate searches by machine
         tmpaddr = host.find("address").get("addr")
         tmpaddr = highlightTerm(tmpaddr, tmpaddr)
-        tmpname = host.find("hostname").get("name")
-        tmpname = highlightTerm(tmpname, tmpname)
+        try:
+            tmpname = host.find("hostname").get("name")
+            tmpname = highlightTerm(tmpname, tmpname)
+        except:
+            tmpname = " "
         print("Finding exploits for " + tmpaddr +
               " (" + tmpname + ")")  # print name of machine
         for service in host.find_all("service"):
