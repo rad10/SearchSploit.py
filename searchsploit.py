@@ -483,6 +483,18 @@ def examine(id):
 def run():
     """ Main function of script. hooks rest of functions
     """
+
+    #global variables brought down
+    global CASE
+    global EXACT
+    global IGNORE
+    global JSON
+    global OVERFLOW
+    global TITLE
+    global WEBLINK
+    global COLOUR
+    global EDBID
+
     if (len(argv) == 1):
         usage()  # runs if given no arguements
         return
@@ -491,43 +503,34 @@ def run():
             usage()
             return
         elif (argv[i] == "-c" or argv[i] == "--case"):
-            global CASE
             CASE = True
         elif (argv[i] == "-e" or argv[i] == "--exact"):
-            global EXACT
             EXACT = True
         elif (argv[i] == "-i" or argv[i] == "--ignore"):
-            global IGNORE
             IGNORE = True
         elif (argv[i] == "-j" or argv[i] == "--json"):
-            global JSON
             JSON = True
         elif (argv[i] == "-m" or argv[i] == "--mirror"):
             mirror(argv[i + 1])
             return
         elif(argv[i] == "-o" or argv[i] == "--overflow"):
-            global OVERFLOW
             OVERFLOW = True
         elif(argv[i] == "-p" or argv[i] == "--path"):
             path(argv[i + 1])
             return
         elif(argv[i] == "-t"or argv[i] == "--title"):
-            global TITLE
             TITLE = True
         elif(argv[i] == "-u"or argv[i] == "--update"):
             update()
             return
         elif(argv[i] == "-w"or argv[i] == "--www"):
-            global WEBLINK
             WEBLINK = True
         elif(argv[i] == "-x"or argv[i] == "--examine"):
             examine(argv[i + 1])
             return
         elif(argv[i] == "--colour"):
-            global COLOUR
             COLOUR = False
         elif(argv[i] == "--id"):
-            global EDBID
             EDBID = True
         elif(argv[i] == "--nmap"):
             nmapxml(argv[i+1])
