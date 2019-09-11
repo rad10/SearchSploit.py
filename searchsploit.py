@@ -199,8 +199,11 @@ def drawline(lim):
     print(line)
 
 
-def highlightTerm(line, term):
-    """ Part one of new highlighting process. Highlights by adding :8 and :9 as escape characters as ansi takes several lines. the rest if compiled 
+def highlightTerm(line, term, autoComp=False):
+    """ Part one of new highlighting process. Highlights by adding :8 and :9 as escape characters as ansi takes several lines. the rest is compiled in separater unless autocomp is true\n
+    @line: the phrase to be checked\n
+    @term: the term that will be found in line and used to highlight the line\n
+    @autoComp: [optional] if true, then it will output the string with the flags already turned into ANSI
     """
     try:
         term = term.lower()
@@ -209,6 +212,8 @@ def highlightTerm(line, term):
             term): line.lower().index(term) + len(term)]
         part3 = line[line.lower().index(term) + len(term):]
         line = part1 + ':8' + part2 + ':9' + part3
+        if autoComp:
+            line = line.replace(":8", '\033[91m').replace(":9", '\033[0m')
     except:
         line = line
     return line
