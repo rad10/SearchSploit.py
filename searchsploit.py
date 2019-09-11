@@ -541,6 +541,18 @@ def run():
     if terms == []:
         usage()  # if no actual terms were made just arguements, then exit
         return
+
+    # Colors for windows
+    if COLOUR and os.sys.platform == "win32":
+        try:
+            import colorama
+        except ImportError:
+            print("You do not have colorama installed. if you want to run with colors, please run:")
+            print("\"pip install colorama\" in your terminal so that windows can use colors.")
+            print("Printing output without colors")
+            COLOUR = False
+        else:
+            colorama.init()
     searchsploitout()
 
 
