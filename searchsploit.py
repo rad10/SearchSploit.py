@@ -221,15 +221,12 @@ def highlightTerm(line, term):
     return line
 
 
-def separater(line1, line2):
-    """ Splits the two texts into database boxes
-    """
-    print(line1 + " | " + line2)
-
-
 def separater(lim, line1, line2):
     """ Splits the two texts to fit perfectly within the terminal width
     """
+    if OVERFLOW:
+        print(line1 + " | " + line2)
+        return
     if (len(line1) >= lim):
         line1 = line1[:lim-1]
     while len(line1) <= lim:
