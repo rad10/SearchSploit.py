@@ -231,20 +231,28 @@ def separater(lim, line1, line2):
 
     if (len(line1) >= lim):
         line1 = line1[:lim-1]
-        if ":8" in line1 and ":9" not in line1:
+        if line1.count(":8") > line1.count(":9"):
+            if line1[len(line1)-1:] == ":8":
+                line1 = line1[:len(line1)-2]
             if line1[-1] == ":":
                 line1 += "9"
             else:
                 line1 += ":9"
+        if line1[-1] == ":":
+            line1 = line1[:len(line1)-2]
     while len(line1) <= lim:
         line1 += " "
     if(len(line2) >= COL-lim):
         line2 = line2[:lim-1]
-        if ":8" in line2 and ":9" not in line2:
-            if line2[-1] == ":":
+        if line2.count(":8") > line2.count(":9"):
+            if line2[len(line2)-1:] == ":8":
+                line2 = line2[:len(line2)-2]
+            elif line2[-1] == ":":
                 line2 += "9"
             else:
                 line2 += ":9"
+        if line2[-1] == ":":
+            line2 = line2[:len(line2)-2]
 
     max = COL
     if ":8" in line1:
@@ -259,12 +267,16 @@ def separater(lim, line1, line2):
     line = line1 + " | " + line2
     if(len(line) > max):
         line = line[:max]
-        ser = line.split("|")[1]
-        if ":8" in ser and ":9" not in ser:
+        if line.count(":8") > line.count(":9"):
+            if line[len(line)-1:] == ":8":
+                line = line[:len(line)-2]
             if line[-1] == ":":
                 line += "9"
             else:
                 line += ":9"
+        if line[-1] == ":":
+            line = line[:len(line)-2]
+
     line = line.replace(":8", '\033[91m').replace(":9", '\033[0m')
     print(line)
 
