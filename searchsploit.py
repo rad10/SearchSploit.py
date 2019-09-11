@@ -394,13 +394,13 @@ def searchsploitout():
         for i in range(len(files_array)):
             if EDBID:
                 query = searchdb(path_array[i] + "/" +
-                                files_array[i], terms, [2, 0])
+                                 files_array[i], terms, [2, 0])
             elif WEBLINK:
                 query = searchdb(path_array[i] + "/" +
-                                files_array[i], terms, [2, 1, 0])
+                                 files_array[i], terms, [2, 1, 0])
             else:
                 query = searchdb(path_array[i] + "/" +
-                                files_array[i], terms, [2, 1])
+                                 files_array[i], terms, [2, 1])
 
             if len(query) == 0:  # is the search results came up with nothing
                 print(name_array[i] + ": No Results")
@@ -436,9 +436,10 @@ def nmapxml(file):
 
     # making sure beautiful soup is importable first
     try:
-       from bs4 import BeautifulSoup
+        from bs4 import BeautifulSoup
     except:
-        print("Error: you need to have beautifulsoup installed to properly use this program")
+        print(
+            "Error: you need to have beautifulsoup installed to properly use this program")
         print("To install beautifulsoup, run 'pip install beautifulsoup4' in your commandline.")
         return
     # Read XML file
@@ -524,7 +525,7 @@ def run():
     """ Main function of script. hooks rest of functions
     """
 
-    #global variables brought down
+    # global variables brought down
     global CASE
     global EXACT
     global IGNORE
@@ -586,8 +587,10 @@ def run():
         try:
             import colorama
         except ImportError:
-            print("You do not have colorama installed. if you want to run with colors, please run:")
-            print("\"pip install colorama\" in your terminal so that windows can use colors.")
+            print(
+                "You do not have colorama installed. if you want to run with colors, please run:")
+            print(
+                "\"pip install colorama\" in your terminal so that windows can use colors.")
             print("Printing output without colors")
             COLOUR = False
         else:
