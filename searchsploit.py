@@ -2,13 +2,6 @@
 from sys import argv, exit
 import os
 
-try:
-    from bs4 import BeautifulSoup
-except:
-    print("Error: you need to have beautifulsoup installed to properly use this program")
-    print("To install beautifulsoup, run 'pip install beautifulsoup4' in your commandline.")
-    exit()
-
 # settings
 SETTINGS_LOC = ""
 # This should be the only variable that you need to edit manually.
@@ -401,6 +394,14 @@ def nmapxml(file):
     file: string path to xml file
     """
     global terms
+
+    # making sure beautiful soup is importable first
+    try:
+       from bs4 import BeautifulSoup
+    except:
+        print("Error: you need to have beautifulsoup installed to properly use this program")
+        print("To install beautifulsoup, run 'pip install beautifulsoup4' in your commandline.")
+        return
     # Read XML file
 
     # ## Feedback to enduser
