@@ -462,7 +462,7 @@ def nmapxml(file):
     # Read XML file
 
     # ## Feedback to enduser
-    print("[i] Reading: " + highlightTerm(str(file), str(file)))
+    print("[i] Reading: " + highlightTerm(str(file), str(file), True))
     tmpaddr = ""
     tmpname = ""
     # ## Read in XMP (IP, name, service, and version)
@@ -473,10 +473,10 @@ def nmapxml(file):
     for host in hostsheet:
         # made these lines to separate searches by machine
         tmpaddr = host.find("address").get("addr")
-        tmpaddr = highlightTerm(tmpaddr, tmpaddr)
+        tmpaddr = highlightTerm(tmpaddr, tmpaddr, True)
         try:
             tmpname = host.find("hostname").get("name")
-            tmpname = highlightTerm(tmpname, tmpname)
+            tmpname = highlightTerm(tmpname, tmpname, True)
         except:
             tmpname = " "
         print("Finding exploits for " + tmpaddr +
