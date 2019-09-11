@@ -355,38 +355,42 @@ def searchsploitout():
     # the magic number to decide how much space is between the two subjects
     lim = int((COL - 3)/2)
     query = []  # temp variable thatll hold all the results
-    for i in range(len(files_array)):
-        if EDBID:
-            query = searchdb(path_array[i] + "/" +
-                             files_array[i], terms, [2, 0])
-        elif WEBLINK:
-            query = searchdb(path_array[i] + "/" +
-                             files_array[i], terms, [2, 1, 0])
-        else:
-            query = searchdb(path_array[i] + "/" +
-                             files_array[i], terms, [2, 1])
-
-        if len(query) == 0:  # is the search results came up with nothing
-            print(name_array[i] + ": No Results")
-            continue
-        drawline(lim)
-        separater(COL/4, name_array[i] + " Title", "Path")
-        separater(COL/4, "", path_array[i])
-        drawline(lim)  # display title for every database
-        for lines in query:
-            if WEBLINK:  # if requesting weblinks. shapes the output for urls
-                lines[1] = "https://www.exploit-db.com/" + \
-                    lines[1][:lines[1].index("/")] + "/" + lines[2]
-            if COLOUR:
-                for term in terms:
-                    lines[0] = highlightTerm(lines[0], term)
-                    lines[1] = highlightTerm(lines[1], term)
+    try:
+        for i in range(len(files_array)):
             if EDBID:
-                # made this change so that ids get less display space
-                separater(int(COL * 0.8), lines[0], lines[1])
+                query = searchdb(path_array[i] + "/" +
+                                files_array[i], terms, [2, 0])
+            elif WEBLINK:
+                query = searchdb(path_array[i] + "/" +
+                                files_array[i], terms, [2, 1, 0])
             else:
-                separater(lim, lines[0], lines[1])
+                query = searchdb(path_array[i] + "/" +
+                                files_array[i], terms, [2, 1])
+
+            if len(query) == 0:  # is the search results came up with nothing
+                print(name_array[i] + ": No Results")
+                continue
+            drawline(lim)
+            separater(COL/4, name_array[i] + " Title", "Path")
+            separater(COL/4, "", path_array[i])
+            drawline(lim)  # display title for every database
+            for lines in query:
+                if WEBLINK:  # if requesting weblinks. shapes the output for urls
+                    lines[1] = "https://www.exploit-db.com/" + \
+                        lines[1][:lines[1].index("/")] + "/" + lines[2]
+                if COLOUR:
+                    for term in terms:
+                        lines[0] = highlightTerm(lines[0], term)
+                        lines[1] = highlightTerm(lines[1], term)
+                if EDBID:
+                    # made this change so that ids get less display space
+                    separater(int(COL * 0.8), lines[0], lines[1])
+                else:
+                    separater(lim, lines[0], lines[1])
+            drawline(lim)
+    except KeyboardInterrupt:
         drawline(lim)
+        return
 
 
 def nmapxml(file):
