@@ -200,7 +200,7 @@ def drawline(lim):
 
 
 def highlightTerm(line, term):
-    """ Takes a line and highlights the given arguement
+    """ Part one of new highlighting process. Highlights by adding :8 and :9 as escape characters as ansi takes several lines. the rest if compiled 
     """
     try:
         term = term.lower()
@@ -208,7 +208,7 @@ def highlightTerm(line, term):
         part2 = line[line.lower().index(
             term): line.lower().index(term) + len(term)]
         part3 = line[line.lower().index(term) + len(term):]
-        line = part1 + '\033[91m' + part2 + '\033[0m' + part3
+        line = part1 + ':8' + part2 + ':9' + part3
     except:
         line = line
     return line
@@ -218,20 +218,55 @@ def separater(lim, line1, line2):
     """ Splits the two texts to fit perfectly within the terminal width
     """
     if OVERFLOW:
-        print(line1 + " | " + line2)
+        line = line1 + " | " + line2
+        line = line.replace(":8", '\033[91m').replace(":9", '\033[0m')
+        print(line)
         return
+
+    # increase lim by markers to not include highlights in series
+    if ":8" in line1:
+        lim += 2
+        if ":9" in line1:
+            lim += 2
+
     if (len(line1) >= lim):
         line1 = line1[:lim-1]
+        if ":8" in line1 and ":9" not in line1:
+            if line1[-1] == ":":
+                line1 += "9"
+            else:
+                line1 += ":9"
     while len(line1) <= lim:
         line1 += " "
-    if '\033[91m' in line1 and '\033[0m' not in line1:
-        line1 += '\033[0m'
     if(len(line2) >= COL-lim):
         line2 = line2[:lim-1]
-    if '\033[91m' in line2 and '\033[0m' not in line2:
-        line2 += '\033[0m'
+        if ":8" in line2 and ":9" not in line2:
+            if line2[-1] == ":":
+                line2 += "9"
+            else:
+                line2 += ":9"
 
-    print(line1 + " | " + line2)
+    max = COL
+    if ":8" in line1:
+        max += 2
+    if ":9" in line1:
+        max += 2
+    if ":8" in line2:
+        max += 2
+    if ":9" in line2:
+        max += 2
+
+    line = line1 + " | " + line2
+    if(len(line) > max):
+        line = line[:max]
+        ser = line.split("|")[1]
+        if ":8" in ser and ":9" not in ser:
+            if line[-1] == ":":
+                line += "9"
+            else:
+                line += ":9"
+    line = line.replace(":8", '\033[91m').replace(":9", '\033[0m')
+    print(line)
 
 
 ##############################
