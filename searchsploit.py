@@ -168,7 +168,7 @@ def update():
 
         # update via git
         os.chdir(path)  # set path to repos directory
-        os.system("git pull --rebase")
+        os.system("git pull -v upstream master")
         print("[i] Git Pull Complete")
     os.chdir(cwd)
     return
