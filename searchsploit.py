@@ -553,7 +553,7 @@ def run():
     global COLOUR
     global EDBID
 
-    if (len(argv) == 1):
+    if (len(argv) == 1 and os.sys.stdin.isatty()):
         usage()  # runs if given no arguements
         return
     for i in range(1, len(argv[1:]) + 1):
@@ -595,6 +595,10 @@ def run():
             return
         else:
             terms.append(argv[i])
+
+    if (os.sys.stdin.isatty() == False):
+        text = str(os.sys.stdin.read())
+        terms.extend(text.split())
     if terms == []:
         usage()  # if no actual terms were made just arguements, then exit
         return
