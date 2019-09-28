@@ -513,14 +513,20 @@ def nmapxml(file=""):
 def path(id):
     """ Function used to run the path arguement
     """
+    try:
     file, exploit = findExploit(id)
     print(path_array[file] + "/" + exploit[1])
-
+    except AttributeError:
+        print("%s does not exist. Please double check that this is the correct id." % id)
 
 def mirror(id):
     """ Function used to mirror exploits
     """
+    try:
     ind, exploit = findExploit(id)
+    except AttributeError:
+        print("%s does not exist. Please double check that this is the correct id." % id)
+        return
     absfile = path_array[ind]
 
     currDir = os.getcwd()
@@ -533,7 +539,11 @@ def mirror(id):
 def examine(id):
     """ Function used to run examine arguement
     """
+    try:
     ind, exploit = findExploit(id)
+    except AttributeError:
+        print("%s does not exist. Please double check that this is the correct id." % id)
+        return
     if exploit[1].split(".")[1] == "pdf":
         os.system("firefox file:///" + path_array[ind] + "/" + exploit[1])
     else:
