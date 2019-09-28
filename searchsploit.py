@@ -682,13 +682,18 @@ def run():
             EDBID = True
         elif(argv[i] == "--nmap"):
             try:
-                if(argv[i+1][0] != "-"):
-                    nmapxml(argv[i+1])
+                if(argv[i + 1][0] != "-"):
+                    print(nmapxml(argv[i+1]))
+                    if not nmapxml(argv[i + 1]):
+                        if not nmapgrep(argv[i + 1]):
+                            usage()
                 else:
                     usage()
             except:
-                if(os.sys.stdin.isatty() == False):
-                    nmapxml()
+                if(not os.sys.stdin.isatty()):
+                    if not nmapxml():
+                        if not nmapgrep():
+                            usage()
                 else:
                     usage()
             return
