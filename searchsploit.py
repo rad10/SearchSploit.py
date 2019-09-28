@@ -55,13 +55,16 @@ def scrapeRC():
             settings = open(".searchsploit_rc", "r").read().split("\n")
     except:
         try:
-            settings = open(os.path.expanduser("~").replace(
-                "\\", "/") + "/.searchsploit_rc", "r").read().split("\n")
-            # Checks for home directory in linux/mac
+            settings = open("/etc/.searchsploit_rc", "r").read().split("\n")
         except:
-            settings = open(os.getenv("userprofile").replace(
-                "\\", "/") + "/.searchsploit_rc", "r").read().split("\n")
-            # Checks for home directory in windows
+            try:
+                settings = open(os.path.expanduser("~").replace(
+                    "\\", "/") + "/.searchsploit_rc", "r").read().split("\n")
+                # Checks for home directory in linux/mac
+            except:
+                settings = open(os.getenv("userprofile").replace(
+                    "\\", "/") + "/.searchsploit_rc", "r").read().split("\n")
+                # Checks for home directory in windows
     for i in settings:
         if(i == "" or i[0] == "#"):
             continue  # Ignores lines that are empty or are just comments
