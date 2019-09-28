@@ -20,6 +20,7 @@ TITLE = False
 IGNORE = False
 CASE = False
 COL = 0
+STDIN = "" # made to hold standard input for multiple functions
 
 # get column length
 try:
@@ -452,6 +453,7 @@ def nmapxml(file=""):
     @return: returns true if it fails
     """
     global terms
+    global STDIN
 
     # First check whether file exists or use stdin
     try:
@@ -459,11 +461,16 @@ def nmapxml(file=""):
     except:
         if(not os.sys.stdin.isatty()):
             content = os.sys.stdin.read()
+            if content == "" and STDIN != "":
+                content = STDIN
+            elif content == "" and STDIN == "":
+                return False
         else:
-            return True
+            return False
 
     # stope if blank or not an xml sheet
     if content == "" or content[:5] != "<?xml":
+        STDIN = content
         return False
     # making sure beautiful soup is importable first
     try:
@@ -511,6 +518,7 @@ def nmapgrep(file=""):
 
     """
     global terms
+    global STDIN
 
     # First check whether file exists or use stdin
     try:
@@ -518,11 +526,16 @@ def nmapgrep(file=""):
     except:
         if(not os.sys.stdin.isatty()):
             content = os.sys.stdin.read()
+            if content == "" and STDIN != "":
+                content = STDIN
+            elif content == "" and STDIN == "":
+                return False
         else:
             return False
 
     # Check whether its grepable
-    if (content.find("Host: ") == -1 and "-oG" in content.split("\n")[0]):
+    if (content.find("Host: ") == -1 or not "-oG" in content.split("\n")[0] or content == ""):
+        STDIN = content
         return False
 
     # making a matrix to contain necessary strings
@@ -537,7 +550,7 @@ def nmapgrep(file=""):
             nmatrix[lines][1] = nmatrix[lines][1][7:].split(", ")
             for j in range(len(nmatrix[lines][1])):
                 nmatrix[lines][1][j] = nmatrix[lines][1][j].replace("/", " ").split()[3:]
-    print(nmatrix)
+
     # Outputing results from matrix
     for host in nmatrix:
         tmpaddr = highlightTerm(host[0][0], host[0][0], True)
