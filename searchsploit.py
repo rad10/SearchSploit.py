@@ -445,12 +445,18 @@ def searchsploitout():
         return
 
 
-def nmapxml(file):
+def nmapxml(file=""):
     """ This function is used for xml manipulation with nmap.\n
     file: string path to xml file
     """
     global terms
 
+    # First check whether file exists or use stdin
+    try:
+        content = open(file, "r").read()
+    # stope if blank or not an xml sheet
+    if content == "" or content[:5] != "<?xml":
+        return False
     # making sure beautiful soup is importable first
     try:
         from bs4 import BeautifulSoup
@@ -458,7 +464,7 @@ def nmapxml(file):
         print(
             "Error: you need to have beautifulsoup installed to properly use this program")
         print("To install beautifulsoup, run 'pip install beautifulsoup4' in your commandline.")
-        return
+        return False
     # Read XML file
 
     # ## Feedback to enduser
@@ -467,7 +473,7 @@ def nmapxml(file):
     tmpname = ""
     # ## Read in XMP (IP, name, service, and version)
     # xx This time with beautiful soup!
-    xmlsheet = BeautifulSoup(open(file, "r").read(), "lxml")
+    xmlsheet = BeautifulSoup(content, "lxml")
 
     hostsheet = xmlsheet.find_all("host")
     for host in hostsheet:
@@ -489,11 +495,13 @@ def nmapxml(file):
             print("Searching terms:", terms)  # displays terms found by xml
             searchsploitout()  # tests search terms by machine
             terms = []  # emptys search terms for next search
-
+    return True
 
 ##########################
 ##  COMMAND FUNCTIONS   ##
 ##########################
+
+
 def path(id):
     """ Function used to run the path arguement
     """
