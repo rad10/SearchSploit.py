@@ -516,7 +516,7 @@ def path(id):
     try:
     file, exploit = findExploit(id)
     print(path_array[file] + "/" + exploit[1])
-    except AttributeError:
+    except TypeError:
         print("%s does not exist. Please double check that this is the correct id." % id)
 
 def mirror(id):
@@ -524,7 +524,7 @@ def mirror(id):
     """
     try:
     ind, exploit = findExploit(id)
-    except AttributeError:
+    except TypeError:
         print("%s does not exist. Please double check that this is the correct id." % id)
         return
     absfile = path_array[ind]
@@ -541,7 +541,7 @@ def examine(id):
     """
     try:
     ind, exploit = findExploit(id)
-    except AttributeError:
+    except TypeError:
         print("%s does not exist. Please double check that this is the correct id." % id)
         return
     if exploit[1].split(".")[1] == "pdf":
