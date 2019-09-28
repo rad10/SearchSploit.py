@@ -447,13 +447,21 @@ def searchsploitout():
 
 def nmapxml(file=""):
     """ This function is used for xml manipulation with nmap.\n
-    file: string path to xml file
+    @file: string path to xml file\n
+    if no file name is given, then it tries stdin\n
+    @return: returns true if it fails
     """
     global terms
 
     # First check whether file exists or use stdin
     try:
         content = open(file, "r").read()
+    except:
+        if(os.sys.stdin.isatty() == False):
+            content = os.sys.stdin.read()
+        else:
+            return True
+
     # stope if blank or not an xml sheet
     if content == "" or content[:5] != "<?xml":
         return False
@@ -599,7 +607,16 @@ def run():
         elif(argv[i] == "--id"):
             EDBID = True
         elif(argv[i] == "--nmap"):
-            nmapxml(argv[i+1])
+            try:
+                if(argv[i+1][0] != "-"):
+                    nmapxml(argv[i+1])
+                else:
+                    usage()
+            except:
+                if(os.sys.stdin.isatty() == False):
+                    nmapxml()
+                else:
+                    usage()
             return
         else:
             terms.append(argv[i])
