@@ -505,6 +505,53 @@ def nmapxml(file=""):
             terms = []  # emptys search terms for next search
     return True
 
+
+def nmapgrep(file=""):
+    """
+
+    """
+    global terms
+
+    # First check whether file exists or use stdin
+    try:
+        content = open(file, "r").read()
+    except:
+        if(not os.sys.stdin.isatty()):
+            content = os.sys.stdin.read()
+        else:
+            return False
+
+    # Check whether its grepable
+    if (content.find("Host: ") == -1 and "-oG" in content.split("\n")[0]):
+        return False
+
+    # making a matrix to contain necessary strings
+    nmatrix = content.split("\n")
+    for lines in range(len(nmatrix) - 1, -1, -1):
+        if (nmatrix[lines].find("Host: ") == -1 or nmatrix[lines].find("Ports: ") == -1):
+            nmatrix.pop(lines)
+        else:
+            nmatrix[lines] = nmatrix[lines].split("\t")[:-1]
+            nmatrix[lines][0] = nmatrix[lines][0][6:].split(" ")
+            nmatrix[lines][0][1] = nmatrix[lines][0][1][1:-1] if (len(nmatrix[lines][0][1]) > 2) else "" # pull hostname out of parenthesis
+            nmatrix[lines][1] = nmatrix[lines][1][7:].split(", ")
+            for j in range(len(nmatrix[lines][1])):
+                nmatrix[lines][1][j] = nmatrix[lines][1][j].replace("/", " ").split()[3:]
+    print(nmatrix)
+    # Outputing results from matrix
+    for host in nmatrix:
+        tmpaddr = highlightTerm(host[0][0], host[0][0], True)
+        tmpname = highlightTerm(host[0][1], host[0][1], True)
+        print("Finding exploits for " + tmpaddr +
+              " (" + tmpname + ")")  # print name of machine
+        for service in host[1]:
+            terms.extend(service)
+            validTerm(terms)
+            print("Searching terms:", terms)  # displays terms found by grep
+            searchsploitout()  # tests search terms by machine
+            terms = []  # emptys search terms for next search
+    return True
+
 ##########################
 ##  COMMAND FUNCTIONS   ##
 ##########################
@@ -518,6 +565,7 @@ def path(id):
     print(path_array[file] + "/" + exploit[1])
     except TypeError:
         print("%s does not exist. Please double check that this is the correct id." % id)
+
 
 def mirror(id):
     """ Function used to mirror exploits
