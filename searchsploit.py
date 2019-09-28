@@ -457,7 +457,7 @@ def nmapxml(file=""):
     try:
         content = open(file, "r").read()
     except:
-        if(os.sys.stdin.isatty() == False):
+        if(not os.sys.stdin.isatty()):
             content = os.sys.stdin.read()
         else:
             return True
@@ -631,7 +631,7 @@ def run():
         else:
             terms.append(argv[i])
 
-    if (os.sys.stdin.isatty() == False):
+    if (not os.sys.stdin.isatty()):
         text = str(os.sys.stdin.read())
         terms.extend(text.split())
     if terms == []:
