@@ -28,7 +28,7 @@ if os.sys.platform == "win32":
     open(os.getenv("userprofile").replace(
         "\\", "/") + "/.searchsploit_rc", "w").write(rc)
     batch = open("searchsploit.bat", "r").readlines()
-    batch[1] = 'set pythonscript = "' + os.getcwd() + '"'
+    batch[1] = 'set pythonscript="' + os.getcwd() + '"'
     batch = "\n".join(batch)
     open("searchsploit.bat", "w").write(batch)
 else:
