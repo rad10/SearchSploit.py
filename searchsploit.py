@@ -80,16 +80,15 @@ def scrapeRC():
 
     # This section is to remove database paths that do not exist
     larray = len(files_array)
-    for i in range(larray):
+    for i in range(larray - 1, 0, -1):
         try:
-            open(path_array[larray-i-1] + "/" + files_array[larray-i-1],
+            open(path_array[i] + "/" + files_array[i],
                  "r", encoding="utf8").read()
         except:
-            files_array.pop(larray - i - 1)
-            name_array.pop(larray - i - 1)
-            path_array.pop(larray - i - 1)
-            git_array.pop(larray - i - 1)
-            --i
+            files_array.pop(i)
+            name_array.pop(i)
+            path_array.pop(i)
+            git_array.pop(i)
 
 
 scrapeRC()
@@ -329,21 +328,21 @@ def validTerm(argsList):
         return argsList
     argsList.sort()
     argslen = len(argsList)
-    for i in range(argslen):
-        if (argsList[argslen-i-1].lower() in dudTerms):
-            argsList.pop(argslen-i-1)
-        elif (argsList[argslen-i-1].lower() in invalidTerms and not IGNORE):
+    for i in range(argslen - 1, 0, -1):
+        if (argsList[i].lower() in dudTerms):
+            argsList.pop(i)
+        elif (argsList[i].lower() in invalidTerms and not IGNORE):
             print(
-                "[-] Skipping term: " + argsList[argslen-i-1] + "   (Term is too general. Please re-search manually:")
-            argsList.pop(argslen-i-1)
+                "[-] Skipping term: " + argsList[i] + "   (Term is too general. Please re-search manually:")
+            argsList.pop(i)
             # Issues, return with something
         elif not CASE:
-            argsList[argslen-i-1] = argsList[argslen-i-1].lower()
+            argsList[i] = argsList[i].lower()
     argsList.sort()
     argslen = len(argsList)
-    for i in range(argslen-1):
-        if (argsList[argslen-i-2] == argsList[argslen-i-1]):
-            argsList.pop(argslen-i-1)
+    for i in range(argslen-1, 1, -1):
+        if (argsList[i] == argsList[i-1]):
+            argsList.pop(i)
         # what to do if the list ends up empty afterwards
     if (len(argsList) == 0):
         print("Looks like those terms were too generic.")
