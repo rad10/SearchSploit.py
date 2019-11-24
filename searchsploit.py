@@ -612,6 +612,8 @@ def examine(id):
         return
     if exploit[1].split(".")[1] == "pdf":
         os.system("firefox file:///" + path_array[ind] + "/" + exploit[1])
+    elif(os.sys.platform == "win32"):
+        os.system("notepad " + path_array[ind] + "/" + exploit[1])
     else:
         os.system("pager " + path_array[ind] + "/" + exploit[1])
     print("[EDBID]:"+exploit[0])
