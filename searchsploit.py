@@ -403,7 +403,26 @@ def searchsploitout():
     # xx validating terms
     validTerm(terms)
     if JSON:
-        # TODO: finish json format
+        jsonDict = {}
+        temp = ""
+        for i in terms:
+            temp += i + " "
+        jsonDict["SEARCH"] = temp[:-1] # Adding the search terms
+        searchs = []
+        try:
+            for i in range(len(files_array)):
+                jsonDict["DB_PATH_" + name_array[i].upper()] = path_array[i]
+                searchs.clear()
+                query = searchdb(path_array[i] + "/" + files_array[i], terms, [2,0,3,4,5,6,1])
+                for lines in query:
+                    searchs.append({"Title": lines[0].replace('"', ""), "EDB-ID":int(lines[1]), "Date": lines[2], "Author":lines[3].replace('"', ""), "Type":lines[4], "Platform": lines[5], "Path":path_array[i] + "/" + lines[6]})
+                jsonDict["RESULTS_" + name_array[i].upper()] = searchs.copy()
+                searchs.clear()
+            import json.encoder
+            jsonResult = json.dumps(jsonDict)
+            print(jsonResult)
+        except KeyboardInterrupt:
+            pass
         return
 
     # xx building terminal look
