@@ -419,7 +419,7 @@ def searchsploitout():
                 jsonDict["RESULTS_" + name_array[i].upper()] = searchs.copy()
                 searchs.clear()
             import json.encoder
-            jsonResult = json.dumps(jsonDict)
+            jsonResult = json.dumps(jsonDict, indent=4, separators=(", ", ": "))
             print(jsonResult)
         except KeyboardInterrupt:
             pass
