@@ -629,7 +629,7 @@ def examine(id):
     except TypeError:
         print("%s does not exist. Please double check that this is the correct id." % id)
         return
-    if exploit[1].split(".")[1] == "pdf":
+    if exploit[1].endswith(".pdf"):
         import webbrowser
         webbrowser.open("file:///" + path_array[ind] + "/" + exploit[1], autoraise=True)
     elif(os.sys.platform == "win32"):
