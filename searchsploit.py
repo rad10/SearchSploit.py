@@ -86,9 +86,12 @@ def scrapeRC():
     larray = len(files_array)
     for i in range(larray - 1, 0, -1):
         try:
-            open(path_array[i] + "/" + files_array[i],
-                 "r", encoding="utf8").read()
+            tempRead = open(os.path.abspath(path_array[i] + "/" + files_array[i]),
+                 "r", encoding="utf8")
+            tempRead.read()
+            tempRead.close()
         except:
+            tempRead.close()
             files_array.pop(i)
             name_array.pop(i)
             path_array.pop(i)
@@ -301,10 +304,13 @@ def cpFromDb(path, id):
     path: absolute path of database\n
     id: the EDBID that is searched for in database
     """
-    db = open(path, "r", encoding="utf8").read().split('\n')
+    dbFile = open(path, "r", encoding="utf8")
+    db = dbFile.read().split('\n')
     for lines in db:
         if lines.split(",")[0] == str(id):
+            dbFile.close()
             return lines.split(",")
+    dbFile.close()
     return []
 
 
@@ -372,7 +378,8 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
             tmpstr += " " + terms[i]
         terms.clear()
         terms.append(tmpstr)
-    db = open(path, "r", encoding="utf8").read().split('\n')
+    dbFile = open(path, "r", encoding="utf8")
+    db = dbFile.read().split('\n')
     for lines in db:
         if (lines != ""):
             for term in terms:
@@ -396,6 +403,7 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
                 tmphold = []
         if(lim != -1 and len(searchTerms) >= lim):
             break
+    dbFile.close()
     return searchTerms
 
 
@@ -482,7 +490,9 @@ def nmapxml(file=""):
 
     # First check whether file exists or use stdin
     try:
-        content = open(file, "r").read()
+        contentFile = open(file, "r")
+        content = contentFile.read()
+        contentFile.close()
     except:
         if(not os.sys.stdin.isatty()):
             content = os.sys.stdin.read()
@@ -547,7 +557,9 @@ def nmapgrep(file=""):
 
     # First check whether file exists or use stdin
     try:
-        content = open(file, "r").read()
+        contentFile = open(file, "r")
+        content = contentFile.read()
+        contentFile.close()
     except:
         if(not os.sys.stdin.isatty()):
             content = os.sys.stdin.read()
@@ -619,9 +631,11 @@ def mirror(id):
     absfile = path_array[ind]
 
     currDir = os.getcwd()
-    inp = open(absfile + "/" + exploit[1], "rb").read()
+    inp = open(absfile + "/" + exploit[1], "rb")
     out = open(currDir + "/" + exploit[1].split("/")[-1], "wb")
-    out.write(inp)
+    out.write(inp.read())
+    inp.close()
+    out.close()
     return
 
 
