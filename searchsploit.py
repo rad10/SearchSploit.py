@@ -36,7 +36,7 @@ terms = []  # global array that contains all search terms
 
 # RC info
 
-progname = argv[0].split("/")[-1]
+progname = os.path.basename(argv[0])
 files_array = []  # Array options with file names
 name_array = []  # Array options with database names
 path_array = []  # Array options with paths to database files
@@ -50,25 +50,19 @@ def scrapeRC():
 
     try:
         if(SETTINGS_LOC != ""):  # Checks if the variable is empty
-            settingsFile = open(SETTINGS_LOC, "r")
+            settingsFile = open(os.path.relpath(SETTINGS_LOC), "r")
         else:
             settingsFile = open(".searchsploit_rc", "r")
     except:
         try:
-            settingsFile = open("/etc/.searchsploit_rc", "r")
+            settingsFile = open(os.path.abspath("/etc/.searchsploit_rc"), "r")
         except:
-            try:
-                settingsFile = open(os.path.expanduser("~").replace(
-                    "\\", "/") + "/.searchsploit_rc", "r")
-                # Checks for home directory in linux/mac
-            except:
-                settingsFile = open(os.getenv("userprofile").replace(
-                    "\\", "/") + "/.searchsploit_rc", "r")
-                # Checks for home directory in windows
+            settingsFile = open(os.path.expanduser("~/.searchsploit_rc"), "r")
+            # Checks for config in home directory
 
     settings = settingsFile.read().split("\n")
     settingsFile.close()
-    
+
     for i in settings:
         if(i == "" or i[0] == "#"):
             continue  # Ignores lines that are empty or are just comments
@@ -86,7 +80,7 @@ def scrapeRC():
     larray = len(files_array)
     for i in range(larray - 1, 0, -1):
         try:
-            tempRead = open(os.path.abspath(path_array[i] + "/" + files_array[i]),
+            tempRead = open(os.path.abspath(os.path.join(path_array[i], files_array[i])),
                  "r", encoding="utf8")
             tempRead.read()
             tempRead.close()
@@ -319,7 +313,7 @@ def findExploit(id):
     """
     exploit = []
     for i in range(len(files_array)):
-        exploit = cpFromDb(path_array[i] + "/" + files_array[i], id)
+        exploit = cpFromDb(os.path.abspath(os.path.join(path_array[i], files_array[i])), id)
         if exploit == []:
             continue
         else:
@@ -423,7 +417,7 @@ def searchsploitout():
             for i in range(len(files_array)):
                 jsonDict["DB_PATH_" + name_array[i].upper()] = path_array[i]
                 searchs.clear()
-                query = searchdb(path_array[i] + "/" + files_array[i], terms, [2,0,3,4,5,6,1])
+                query = searchdb(os.path.abspath(os.path.join(path_array[i], files_array[i])), terms, [2,0,3,4,5,6,1])
                 for lines in query:
                     searchs.append({"Title": lines[0].replace('"', ""), "EDB-ID":int(lines[1]), "Date": lines[2], "Author":lines[3].replace('"', ""), "Type":lines[4], "Platform": lines[5], "Path":path_array[i] + "/" + lines[6]})
                 jsonDict["RESULTS_" + name_array[i].upper()] = searchs.copy()
@@ -442,21 +436,18 @@ def searchsploitout():
     try:
         for i in range(len(files_array)):
             if EDBID:
-                query = searchdb(path_array[i] + "/" +
-                                 files_array[i], terms, [2, 0])
+                query = searchdb(os.path.abspath(os.path.join(path_array[i], files_array[i])), terms, [2, 0])
             elif WEBLINK:
-                query = searchdb(path_array[i] + "/" +
-                                 files_array[i], terms, [2, 1, 0])
+                query = searchdb(os.path.abspath(os.path.join(path_array[i], files_array[i])), terms, [2, 1, 0])
             else:
-                query = searchdb(path_array[i] + "/" +
-                                 files_array[i], terms, [2, 1])
+                query = searchdb(os.path.abspath(os.path.join(path_array[i], files_array[i])), terms, [2, 1])
 
             if len(query) == 0:  # is the search results came up with nothing
                 print(name_array[i] + ": No Results")
                 continue
             drawline(lim)
             separater(COL/4, name_array[i] + " Title", "Path")
-            separater(COL/4, "", path_array[i])
+            separater(COL/4, "", os.path.abspath(path_array[i]))
             drawline(lim)  # display title for every database
             for lines in query:
                 if WEBLINK:  # if requesting weblinks. shapes the output for urls
@@ -613,7 +604,7 @@ def path(id):
     """
     try:
         file, exploit = findExploit(id)
-        print(path_array[file] + "/" + exploit[1])
+        print(os.path.abspath(os.path.join(path_array[file], exploit[1])))
     except TypeError:
         print("%s does not exist. Please double check that this is the correct id." % id)
 
@@ -629,8 +620,8 @@ def mirror(id):
     absfile = path_array[ind]
 
     currDir = os.getcwd()
-    inp = open(absfile + "/" + exploit[1], "rb")
-    out = open(currDir + "/" + exploit[1].split("/")[-1], "wb")
+    inp = open(os.path.normpath(os.path.join(absfile,exploit[1])), "rb")
+    out = open(os.path.join(currDir,os.path.basename(exploit[1])), "wb")
     out.write(inp.read())
     inp.close()
     out.close()
@@ -647,14 +638,14 @@ def examine(id):
         return
     if exploit[1].endswith(".pdf"):
         import webbrowser
-        webbrowser.open("file:///" + path_array[ind] + "/" + exploit[1], autoraise=True)
+        webbrowser.open("file:///" + os.path.abspath(os.path.join(path_array[ind], exploit[1])), autoraise=True)
     elif(os.sys.platform == "win32"):
-        os.system("notepad " + path_array[ind] + "/" + exploit[1])
+        os.system("notepad " + os.path.relpath(os.path.join(path_array[ind], exploit[1])))
     else:
-        os.system("pager " + path_array[ind] + "/" + exploit[1])
-    print("[EDBID]:"+exploit[0])
+        os.system("pager " + os.path.relpath(os.path.join(path_array[ind],exploit[1])))
+    print("[EDBID]:" + exploit[0])
     print("[Exploit]:" + exploit[2])
-    print("[Path]:" + path_array[ind] + "/" + exploit[1])
+    print("[Path]:" + os.path.abspath(os.path.join(path_array[ind], exploit[1])))
     print("[URL]:https://www.exploit-db.com/" +
           exploit[1].split("/")[0] + "/" + exploit[0])
     print("[Date]:" + exploit[3])
