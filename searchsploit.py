@@ -170,14 +170,12 @@ def update():
     """ This function is used to update all the databases via github (because github is the best update system for databases this size)
     """
     cwd = os.getcwd()
-    path = ""
     for i in range(len(files_array)):
-        path = path_array[i]
         print("[i] Path: " + path_array[i])
         print("[i] Git Pulling: " + name_array[i] + " ~ " + path_array[i])
 
         # update via git
-        os.chdir(path)  # set path to repos directory
+        os.chdir(path_array[i])  # set path to repos directory
         os.system("git pull -v upstream master")
         print("[i] Git Pull Complete")
     os.chdir(cwd)
