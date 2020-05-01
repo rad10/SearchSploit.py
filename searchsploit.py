@@ -50,21 +50,25 @@ def scrapeRC():
 
     try:
         if(SETTINGS_LOC != ""):  # Checks if the variable is empty
-            settings = open(SETTINGS_LOC, "r").read().split("\n")
+            settingsFile = open(SETTINGS_LOC, "r")
         else:
-            settings = open(".searchsploit_rc", "r").read().split("\n")
+            settingsFile = open(".searchsploit_rc", "r")
     except:
         try:
-            settings = open("/etc/.searchsploit_rc", "r").read().split("\n")
+            settingsFile = open("/etc/.searchsploit_rc", "r")
         except:
             try:
-                settings = open(os.path.expanduser("~").replace(
-                    "\\", "/") + "/.searchsploit_rc", "r").read().split("\n")
+                settingsFile = open(os.path.expanduser("~").replace(
+                    "\\", "/") + "/.searchsploit_rc", "r")
                 # Checks for home directory in linux/mac
             except:
-                settings = open(os.getenv("userprofile").replace(
-                    "\\", "/") + "/.searchsploit_rc", "r").read().split("\n")
+                settingsFile = open(os.getenv("userprofile").replace(
+                    "\\", "/") + "/.searchsploit_rc", "r")
                 # Checks for home directory in windows
+
+    settings = settingsFile.read().split("\n")
+    settingsFile.close()
+    
     for i in settings:
         if(i == "" or i[0] == "#"):
             continue  # Ignores lines that are empty or are just comments
