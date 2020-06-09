@@ -2,13 +2,6 @@
 from sys import argv, exit
 import os
 
-# settings
-SETTINGS_LOC = ""
-# This should be the only variable that you need to edit manually.
-# place the file path of .searchsploit_rc so that the script can get the
-# rest of the settings from anywhere
-
-
 # Default options
 COLOUR = True
 EDBID = False
@@ -49,15 +42,13 @@ def scrapeRC():
     divider = []
 
     try:
-        if(SETTINGS_LOC != ""):  # Checks if the variable is empty
-            settingsFile = open(os.path.relpath(SETTINGS_LOC), "r")
-        else:
-            settingsFile = open(".searchsploit_rc", "r")
+        settingsFile = open("/etc/.searchsploit_rc", "r")
     except:
         try:
-            settingsFile = open(os.path.abspath("/etc/.searchsploit_rc"), "r")
-        except:
             settingsFile = open(os.path.expanduser("~/.searchsploit_rc"), "r")
+        except:
+            settingsFile = open(os.path.abspath(
+                os.sys.path[0] + "/.searchsploit_rc"), "r")
             # Checks for config in home directory
 
     settings = settingsFile.read().split("\n")
