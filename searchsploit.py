@@ -76,7 +76,10 @@ def scrapeRC():
             tempRead.read()
             tempRead.close()
         except:
+            try:
             tempRead.close()
+            except:
+                pass
             files_array.pop(i)
             name_array.pop(i)
             path_array.pop(i)
