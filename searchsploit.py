@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from sys import argv, exit
 import os
+import argparse
 
 # Default options
 COLOUR = True
@@ -88,8 +89,78 @@ def scrapeRC():
 
 scrapeRC()
 
+parseArgs = None  # Variable to hold values from parser
+parser = argparse.ArgumentParser(
+    prefix_chars="-+/", formatter_class=argparse.RawTextHelpFormatter, prog=os.path.basename(argv[0]))
 
+parser.description = """
+==========
+ Examples
+==========
+  %(prog)s afd windows local
+  %(prog)s -t oracle windows
+  %(prog)s -p 39446
+  %(prog)s linux kernel 3.2 --exclude="(PoC)|/dos/"
+  %(prog)s linux reverse password
+
+  For more examples, see the manual: https://www.exploit-db.com/searchsploit
+
+=========
+ Options
+=========   
+"""
+parser.epilog = """
+=======
+ Notes
+=======
+ * You can use any number of search terms.
+ * Search terms are not case-sensitive (by default), and ordering is irrelevant.
+   * Use '-c' if you wish to reduce results by case-sensitive searching.
+   * And/Or '-e' if you wish to filter results by using an exact match.
+ * Use '-t' to exclude the file's path to filter the search results.
+   * Remove false positives (especially when searching using numbers - i.e. versions).
+ * When updating or displaying help, search terms will be ignored.
+"""
+
+# Arguments
+parserCommands = parser.add_mutually_exclusive_group()
+# parserSearchTerms = parserCommands.add_argument_group()
+
+# TODO: Build custom formatter to prevent smaller args from having values
+parser.add_argument("searchTerms", nargs=argparse.REMAINDER)
+
+parser.add_argument("-c", "--case", nargs="?", default=False, const=True, metavar="Term",
+                    help="Perform a case-sensitive search (Default is inSEnsITiVe).")
+parser.add_argument("-e", "--exact", nargs="?", default=False, const=True, metavar="Term",
+                    help="Perform an EXACT match on exploit title (Default is AND) [Implies \"-t\"].")
+parser.add_argument("-i", "--ignore", nargs="?", default=False, const=True, metavar="Term",
+                    help="Adds any redundant term in despite it possibly giving false positives.")
+parser.add_help = True
+parser.add_argument("-j", "--json", nargs="?", default=False, const=True, metavar="Term",
+                    help="Show result in JSON format.")
+parserCommands.add_argument("-m", "--mirror", type=int, default=None,
+                            metavar="[EDB-ID]", help="Mirror (aka copies) an exploit to the current working directory.")
+parser.add_argument("-o", "--overflow", nargs="?", default=False, const=True, metavar="Term",
+                    help="Exploit titles are allowed to overflow their columns.")
+parserCommands.add_argument("-p", "--path", type=int, default=None,
+                            metavar="[EDB-ID]", help="Show the full path to an exploit (and also copies the path to the clipboard if possible).")
+parser.add_argument("-t", "--title", nargs="?", default=False, const=True, metavar="Term",
+                    help="Search JUST the exploit title (Default is title AND the file's path).")
+parser.add_argument("-u", "--update", nargs="?", default=False, const=True, metavar="Term",
+                    help="Check for and install any exploitdb package updates (deb or git).")
+parser.add_argument("-w", "--www", nargs="?", default=False, const=True, metavar="Term",
+                    help="Show URLs to Exploit-DB.com rather than the local path.")
+parserCommands.add_argument("-x", "--examine", type=int, default=None,
+                            metavar=("[EDB-ID]"), help="Examine (aka opens) the exploit using \$PAGER.")
+parser.add_argument("--colour", nargs="?", default=False, const=True, metavar="Term",
+                    help="Disable colour highlighting in search results.")
+parser.add_argument("--id", nargs="?", default=False, const=True, metavar="Term",
+                    help="Display the EDB-ID value rather than local path.")
+parser.add_argument("--nmap", metavar="file.xml", nargs="?", type=argparse.FileType("r"), default=None, const=os.sys.stdin,
+                    help="Checks all results in Nmap's XML output with service version (e.g.: nmap -sV -oX file.xml).\nUse \"-v\" (verbose) to try even more combinations")
 # Usage info
+parser.print_help()
+print(parser.parse_args())
 def usage():
     """ This function displays the manual for the program and the help function
     """
