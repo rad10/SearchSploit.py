@@ -516,7 +516,10 @@ def nmapxml(file=""):
     # Read XML file
 
     # ## Feedback to enduser
+    if (type(file) == str):
     print("[i] Reading: " + highlightTerm(str(file), str(file), True))
+    else:
+        print("[i] Reading: " + highlightTerm(file.name, file.name, True))
     tmpaddr = ""
     tmpname = ""
     # ## Read in XMP (IP, name, service, and version)
