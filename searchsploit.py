@@ -155,67 +155,6 @@ parser.add_argument("--nmap", metavar="file.xml", nargs="?", type=argparse.FileT
 
 # Argument variable
 parseArgs = parser.parse_args()
-# Usage info
-def usage():
-    """ This function displays the manual for the program and the help function
-    """
-    print("  Usage: " + progname + " [options] term1 [term2] ... [termN]")
-    print("")
-    print("==========")
-    print(" Examples ")
-    print("==========")
-    print("  " + progname + " afd windows local")
-    print("  " + progname + " -t oracle windows")
-    print("  " + progname + " -p 39446")
-    print("  " + progname + " linux kernel 3.2 --exclude=\"(PoC)|/dos/\"")
-    print("  " + progname + " linux reverse password")
-    print("")
-    print("  For more examples, see the manual: https://www.exploit-db.com/searchsploit")
-    print("")
-    print("=========")
-    print(" Options ")
-    print("=========")
-    print(
-        "   -c, --case     [Term]      Perform a case-sensitive search (Default is inSEnsITiVe).")
-    print(
-        "   -e, --exact    [Term]      Perform an EXACT match on exploit title (Default is AND) [Implies \"-t\"].")
-    print(
-        " -i, --ignore    [Term]     Adds any redundant term in despite it possibly giving false positives.")
-    print("   -h, --help                 Show this help screen.")
-    print("   -j, --json     [Term]      Show result in JSON format.")
-    print(
-        "   -m, --mirror   [EDB-ID]    Mirror (aka copies) an exploit to the current working directory.")
-    print(
-        "   -o, --overflow [Term]      Exploit titles are allowed to overflow their columns.")
-    print(
-        "   -p, --path     [EDB-ID]    Show the full path to an exploit (and also copies the path to the clipboard if possible).")
-    print(
-        "   -t, --title    [Term]      Search JUST the exploit title (Default is title AND the file's path).")
-    print("   -u, --update               Check for and install any exploitdb package updates (deb or git).")
-    print(
-        "   -w, --www      [Term]      Show URLs to Exploit-DB.com rather than the local path.")
-    print(
-        "   -x, --examine  [EDB-ID]    Examine (aka opens) the exploit using \$PAGER.")
-    print("       --colour               Disable colour highlighting in search results.")
-    print("       --id                   Display the EDB-ID value rather than local path.")
-    print(
-        "       --nmap     [file.xml]  Checks all results in Nmap's XML output with service version (e.g.: nmap -sV -oX file.xml).")
-    print("                                Use \"-v\" (verbose) to try even more combinations")
-    print("       --exclude=\"term\"       Remove values from results. By using \"|\" to separated you can chain multiple values.")
-    print("                                e.g. --exclude=\"term1|term2|term3\".")
-    print("")
-    print("=======")
-    print(" Notes ")
-    print("=======")
-    print(" * You can use any number of search terms.")
-    print(" * Search terms are not case-sensitive (by default), and ordering is irrelevant.")
-    print("   * Use '-c' if you wish to reduce results by case-sensitive searching.")
-    print("   * And/Or '-e' if you wish to filter results by using an exact match.")
-    print(" * Use '-t' to exclude the file's path to filter the search results.")
-    print("   * Remove false positives (especially when searching using numbers - i.e. versions).")
-    print(" * When updating or displaying help, search terms will be ignored.")
-    print("")
-    exit(2)
 
 # Update database check
 
