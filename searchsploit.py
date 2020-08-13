@@ -121,7 +121,7 @@ parserCommands = parser.add_mutually_exclusive_group()
 # parserSearchTerms = parserCommands.add_argument_group()
 
 # TODO: Build custom formatter to prevent smaller args from having values
-parser.add_argument("searchTerms", nargs=argparse.REMAINDER)
+parser.add_argument("searchTerms", nargs="*")
 
 parser.add_argument("-c", "--case", action="store_true",
                     help="Perform a case-sensitive search (Default is inSEnsITiVe).")
@@ -152,6 +152,8 @@ parser.add_argument("--id", action="store_true",
                     help="Display the EDB-ID value rather than local path.")
 parser.add_argument("--nmap", metavar="file.xml", nargs="?", type=argparse.FileType("r"), default=None, const=os.sys.stdin,
                     help="Checks all results in Nmap's XML output with service version (e.g.: nmap -sV -oX file.xml).\nUse \"-v\" (verbose) to try even more combinations")
+parser.add_argument("--exclude", nargs="*", type=str, default=list(), metavar="[terms]",
+                    help="Remove certain terms from the results. Option best added after all other terms have been gathered.")
 
 # Argument variable
 parseArgs = parser.parse_args()
@@ -338,6 +340,8 @@ def validTerm(argsList):
                 "[-] Skipping term: " + argsList[i] + "   (Term is too general. Please re-search manually:")
             argsList.pop(i)
             # Issues, return with something
+        elif argsList[i].lower() in parseArgs.exclude:
+            argsList.pop(i)
         elif not parseArgs.case:
             argsList[i] = argsList[i].lower()
     argsList.sort()
@@ -374,25 +378,31 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
     db = dbFile.read().split('\n')
     for lines in db:
         if (lines != ""):
-            for term in terms:
-                if parseArgs.title:
-                    line = lines.split(",")[2]
-                    if parseArgs.case:
-                        if term not in line:
-                            break
-                    elif term not in line.lower():
-                        break
-                elif parseArgs.case:
-                    if term not in lines:
-                        break
-                elif term not in lines.lower():
+            for ex in parseArgs.exclude:
+                if parseArgs.case and ex in lines:
+                    break
+                elif ex in lines.lower():
                     break
             else:
-                for i in cols:
-                    space = lines.split(",")
-                    tmphold.append(space[i])
-                searchTerms.append(tmphold)
-                tmphold = []
+                for term in terms:
+                    if parseArgs.title:
+                        line = lines.split(",")[2]
+                        if parseArgs.case:
+                            if term not in line:
+                                break
+                        elif term not in line.lower():
+                            break
+                    elif parseArgs.case:
+                        if term not in lines:
+                            break
+                    elif term not in lines.lower():
+                        break
+                else:
+                    for i in cols:
+                        space = lines.split(",")
+                        tmphold.append(space[i])
+                    searchTerms.append(tmphold)
+                    tmphold = []
         if(lim != -1 and len(searchTerms) >= lim):
             break
     dbFile.close()
@@ -699,6 +709,7 @@ def run():
         parser.print_help()  # runs if given no arguements
         return
 
+    # DB Tools
     if parseArgs.mirror != None:
         mirror(parseArgs.mirror)
         return
@@ -711,7 +722,14 @@ def run():
     elif parseArgs.examine != None:
         examine(parseArgs.examine)
         return
-    elif parseArgs.nmap != None:
+    
+    # formatting exclusions
+    if not parseArgs.case:
+        for i in range(len(parseArgs.exclude)):
+            parseArgs.exclude[i] = parseArgs.exclude[i].lower()
+
+    # Nmap tool
+    if parseArgs.nmap != None:
         result = nmapxml(parseArgs.nmap)
         if not result:
             result = nmapgrep(parseArgs.nmap)
