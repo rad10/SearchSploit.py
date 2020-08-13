@@ -407,6 +407,12 @@ def searchsploitout():
             separater(COL/4, "", os.path.abspath(path_array[i]))
             drawline(lim)  # display title for every database
             for lines in query:
+                # Removing quotes around title if present
+                if (lines[0][0] == "\"" or lines[0][0] == "\'"):
+                    lines[0] = lines[0][1:]
+                if (lines[0][-1] == "\"" or lines[0][-1] == "\'"):
+                    lines[0] = lines[0][:-1]
+
                 if WEBLINK:  # if requesting weblinks. shapes the output for urls
                     lines[1] = "https://www.exploit-db.com/" + \
                         lines[1][:lines[1].index("/")] + "/" + lines[2]
