@@ -203,15 +203,16 @@ def highlightTerm(line, term):
     @term: the term that will be found in line and used to highlight the line\n
     @autoComp: [optional] if true, then it will output the string with the flags already turned into ANSI
     """
-    try:
-        term = term.lower()
-        part1 = line[:line.lower().index(term)]
-        part2 = line[line.lower().index(
-            term): line.lower().index(term) + len(term)]
-        part3 = line[line.lower().index(term) + len(term):]
-        line = part1 + '\033[91m' + part2 + '\033[0m' + part3
-    except:
-        line = line
+    marker = 0 # marks where the term is first found
+    term = term.lower()
+
+    while (line.lower().find(term, marker) >= 0):
+        marker = line.lower().find(term, marker) # update location of new found term
+        part1 = line[:marker]
+        part2 = line[marker: marker + len(term)]
+        part3 = line[marker + len(term):]
+        line = "{0}\033[91m{1}\033[0m{2}".format(part1, part2, part3)
+        marker += len(term) + 4
     return line
 
 
