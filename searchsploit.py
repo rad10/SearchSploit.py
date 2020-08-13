@@ -409,6 +409,10 @@ def searchsploitout():
     # xx building terminal look
     # the magic number to decide how much space is between the two subjects
     lim = int((COL - 3)/2)
+
+    # manipulate limit if ID is used
+    if parseArgs.id:
+        lim = int(COL * 0.8)
     query = []  # temp variable thatll hold all the results
     try:
         for i in range(len(files_array)):
@@ -425,10 +429,11 @@ def searchsploitout():
             if len(query) == 0:  # is the search results came up with nothing
                 print(name_array[i] + ": No Results")
                 continue
+            drawline(COL//4)
+            separater(COL//4, name_array[i] + " Title", "Path")
+            separater(COL//4, "", os.path.abspath(path_array[i]))
+            drawline(COL//4)  # display title for every database
             drawline(lim)
-            separater(COL/4, name_array[i] + " Title", "Path")
-            separater(COL/4, "", os.path.abspath(path_array[i]))
-            drawline(lim)  # display title for every database
             for lines in query:
                 # Removing quotes around title if present
                 if (lines[0][0] == "\"" or lines[0][0] == "\'"):
@@ -443,11 +448,7 @@ def searchsploitout():
                     for term in terms:
                         lines[0] = highlightTerm(lines[0], term)
                         lines[1] = highlightTerm(lines[1], term)
-                if parseArgs.id:
-                    # made this change so that ids get less display space
-                    separater(int(COL * 0.8), lines[0], lines[1])
-                else:
-                    separater(lim, lines[0], lines[1])
+                separater(lim, lines[0], lines[1])
             drawline(lim)
     except KeyboardInterrupt:
         drawline(lim)
