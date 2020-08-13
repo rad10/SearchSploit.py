@@ -4,15 +4,6 @@ import os
 import argparse
 
 # Default options
-COLOUR = True
-EDBID = False
-EXACT = False
-JSON = False
-OVERFLOW = False
-WEBLINK = False
-TITLE = False
-IGNORE = False
-CASE = False
 COL = 0
 STDIN = ""  # made to hold standard input for multiple functions
 
@@ -293,7 +284,7 @@ def highlightTerm(line, term, autoComp=False):
 def separater(lim, line1, line2):
     """ Splits the two texts to fit perfectly within the terminal width
     """
-    if OVERFLOW:
+    if parseArgs.overflow:
         line = line1 + " | " + line2
         line = line.replace(":8", '\033[91m').replace(":9", '\033[0m')
         print(line)
@@ -395,19 +386,19 @@ def validTerm(argsList):
     invalidTerms = ["microsoft", "microsoft windows", "apache", "ftp",
                     "http", "linux", "net", "network", "oracle", "ssh", "ms-wbt-server", "unknown", "none"]
     dudTerms = ["unknown", "none"]
-    if EXACT:
+    if parseArgs.exact:
         return argsList
     argsList.sort()
     argslen = len(argsList)
     for i in range(argslen - 1, 0, -1):
         if (argsList[i].lower() in dudTerms):
             argsList.pop(i)
-        elif (argsList[i].lower() in invalidTerms and not IGNORE):
+        elif (argsList[i].lower() in invalidTerms and not parseArgs.ignore):
             print(
                 "[-] Skipping term: " + argsList[i] + "   (Term is too general. Please re-search manually:")
             argsList.pop(i)
             # Issues, return with something
-        elif not CASE:
+        elif not parseArgs.case:
             argsList[i] = argsList[i].lower()
     argsList.sort()
     argslen = len(argsList)
@@ -433,7 +424,7 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
     """
     searchTerms = []
     tmphold = []
-    if EXACT:
+    if parseArgs.exact:
         tmpstr = str(terms[0])
         for i in range(1, len(terms)):
             tmpstr += " " + terms[i]
@@ -444,14 +435,14 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
     for lines in db:
         if (lines != ""):
             for term in terms:
-                if TITLE:
+                if parseArgs.title:
                     line = lines.split(",")[2]
-                    if CASE:
+                    if parseArgs.case:
                         if term not in line:
                             break
                     elif term not in line.lower():
                         break
-                elif CASE:
+                elif parseArgs.case:
                     if term not in lines:
                         break
                 elif term not in lines.lower():
@@ -475,7 +466,7 @@ def searchsploitout():
 
     # xx validating terms
     validTerm(terms)
-    if JSON:
+    if parseArgs.json:
         jsonDict = {}
         temp = ""
         for i in terms:
@@ -504,9 +495,9 @@ def searchsploitout():
     query = []  # temp variable thatll hold all the results
     try:
         for i in range(len(files_array)):
-            if EDBID:
+            if parseArgs.id:
                 query = searchdb(os.path.abspath(os.path.join(path_array[i], files_array[i])), terms, [2, 0])
-            elif WEBLINK:
+            elif parseArgs.www:
                 query = searchdb(os.path.abspath(os.path.join(path_array[i], files_array[i])), terms, [2, 1, 0])
             else:
                 query = searchdb(os.path.abspath(os.path.join(path_array[i], files_array[i])), terms, [2, 1])
@@ -519,14 +510,14 @@ def searchsploitout():
             separater(COL/4, "", os.path.abspath(path_array[i]))
             drawline(lim)  # display title for every database
             for lines in query:
-                if WEBLINK:  # if requesting weblinks. shapes the output for urls
+                if parseArgs.www:  # if requesting weblinks. shapes the output for urls
                     lines[1] = "https://www.exploit-db.com/" + \
                         lines[1][:lines[1].index("/")] + "/" + lines[2]
-                if COLOUR:
+                if parseArgs.colour:
                     for term in terms:
                         lines[0] = highlightTerm(lines[0], term)
                         lines[1] = highlightTerm(lines[1], term)
-                if EDBID:
+                if parseArgs.id:
                     # made this change so that ids get less display space
                     separater(int(COL * 0.8), lines[0], lines[1])
                 else:
@@ -733,15 +724,6 @@ def run():
     """
 
     # global variables brought down
-    global CASE
-    global EXACT
-    global IGNORE
-    global JSON
-    global OVERFLOW
-    global TITLE
-    global WEBLINK
-    global COLOUR
-    global EDBID
 
     if (len(argv) == 1 and os.sys.stdin.isatty()):
         usage()  # runs if given no arguements
@@ -803,12 +785,9 @@ def run():
     if (not os.sys.stdin.isatty()):
         text = str(os.sys.stdin.read())
         terms.extend(text.split())
-    if terms == []:
-        usage()  # if no actual terms were made just arguements, then exit
-        return
 
     # Colors for windows
-    if COLOUR and os.sys.platform == "win32":
+    if parseArgs.colour and os.sys.platform == "win32":
         try:
             import colorama
         except ImportError:
@@ -817,7 +796,7 @@ def run():
             print(
                 "\"pip install colorama\" in your terminal so that windows can use colors.")
             print("Printing output without colors")
-            COLOUR = False
+            parseArgs.colour = False
         else:
             colorama.init()
     searchsploitout()
