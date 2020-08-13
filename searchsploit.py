@@ -69,17 +69,8 @@ def scrapeRC():
 
     # This section is to remove database paths that do not exist
     larray = len(files_array)
-    for i in range(larray - 1, 0, -1):
-        try:
-            tempRead = open(os.path.abspath(os.path.join(path_array[i], files_array[i])),
-                            "r", encoding="utf8")
-            tempRead.read()
-            tempRead.close()
-        except:
-            try:
-                tempRead.close()
-            except:
-                pass
+    for i in range(larray - 1, -1, -1):
+        if not os.path.exists(os.path.abspath(os.path.join(path_array[i], files_array[i]))):
             files_array.pop(i)
             name_array.pop(i)
             path_array.pop(i)
