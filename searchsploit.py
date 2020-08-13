@@ -22,7 +22,7 @@ terms = []  # global array that contains all search terms
 # RC info
 
 progname = os.path.basename(argv[0])
-VERSION = "v1.5" # Program version
+VERSION = "v1.5"  # Program version
 files_array = []  # Array options with file names
 name_array = []  # Array options with database names
 path_array = []  # Array options with paths to database files
@@ -53,7 +53,7 @@ def scrapeRC():
         for p in paths:
             print("\"{0}\"".format(p))
         exit(2)
-    
+
     for i in settings:
         if(i == "" or i[0] == "#"):
             continue  # Ignores lines that are empty or are just comments
@@ -149,7 +149,8 @@ parser.add_argument("--id", action="store_true",
                     help="Display the EDB-ID value rather than local path.")
 parser.add_argument("--nmap", metavar="file.xml", nargs="?", type=argparse.FileType("r"), default=None, const=os.sys.stdin,
                     help="Checks all results in Nmap's XML output with service version (e.g.: nmap -sV -oX file.xml).\nUse \"-v\" (verbose) to try even more combinations")
-parser.add_argument("--version", action="version", version="%(prog)s {0}".format(VERSION))
+parser.add_argument("--version", action="version",
+                    version="%(prog)s {0}".format(VERSION))
 parser.add_argument("--exclude", nargs="*", type=str, default=list(), metavar="[terms]",
                     help="Remove certain terms from the results. Option best added after all other terms have been gathered.")
 
@@ -169,7 +170,7 @@ def update():
 
         # update via git
         os.chdir(path_array[i])  # set path to repos directory
-        os.system("git pull -v upstream master")
+        os.system("git pull -v origin master")
         print("[i] Git Pull Complete")
     os.chdir(cwd)
     return
@@ -181,7 +182,7 @@ def update():
 def drawline():
     """ Draws a line in the terminal.
     """
-    line = "" * (int(COL) - 1) 
+    line = "" * (int(COL) - 1)
     print(line)
 
 
@@ -191,7 +192,7 @@ def drawline(lim):
     """
     line = "-" * lim
     line += "+"
-    line += "-" * (COL - lim - 2) # -2 for terminal padding
+    line += "-" * (COL - lim - 2)  # -2 for terminal padding
     print(line)
 
 
@@ -205,11 +206,11 @@ def highlightTerm(line, term):
     if not parseArgs.colour:
         return line
 
-    marker = 0 # marks where the term is first found
+    marker = 0  # marks where the term is first found
     term = term.lower()
 
     while (line.lower().find(term, marker) >= 0):
-        marker = line.lower().find(term, marker) # update location of new found term
+        marker = line.lower().find(term, marker)  # update location of new found term
         part1 = line[:marker]
         part2 = line[marker: marker + len(term)]
         part3 = line[marker + len(term):]
@@ -218,7 +219,7 @@ def highlightTerm(line, term):
     return line
 
 
-def separater(lim, line1:str, line2:str):
+def separater(lim, line1: str, line2: str):
     """ Splits the two texts to fit perfectly within the terminal width
     """
     lim = int(lim)
@@ -227,13 +228,15 @@ def separater(lim, line1:str, line2:str):
         print(line)
         return
 
-    line1_length = lim - 1 # subtract 1 for padding
-    line2_length = int(COL) - lim - 2 - 1 # -2 for divider padding and -1 for terminal padding
-    format_string = "{{title:{title_length}.{title_length}s}}\033[0m | {{path:{path_length}.{path_length}s}}\033[0m"    
-    
+    line1_length = lim - 1  # subtract 1 for padding
+    # -2 for divider padding and -1 for terminal padding
+    line2_length = int(COL) - lim - 2 - 1
+    format_string = "{{title:{title_length}.{title_length}s}}\033[0m | {{path:{path_length}.{path_length}s}}\033[0m"
+
     # Escape options for colour
     if not parseArgs.colour:
-        print("{{0:{0}.{0}s}} | {{1:{1}.{1}s}}".format(line1_length, line2_length).format(line1, line2))
+        print("{{0:{0}.{0}s}} | {{1:{1}.{1}s}}".format(
+            line1_length, line2_length).format(line1, line2))
         return
 
     # increase lim by markers to not include highlights in series
@@ -254,9 +257,9 @@ def separater(lim, line1:str, line2:str):
         line2_length += 4
         last_mark = line2.find("\033[0m", last_mark, line2_length + 4) + 4
 
-
     # Creating format string for print
-    fstring = format_string.format(title_length=line1_length, path_length=line2_length)
+    fstring = format_string.format(
+        title_length=line1_length, path_length=line2_length)
     line = fstring.format(title=line1, path=line2)
     print(line)
 
@@ -508,7 +511,6 @@ def nmapxml(file=""):
     # ## Read in XMP (IP, name, service, and version)
     root = ET.fromstring(content)
 
-
     hostsheet = root.findall("host")
     for host in hostsheet:
         # made these lines to separate searches by machine
@@ -531,7 +533,7 @@ def nmapxml(file=""):
             print("Searching terms:", terms)  # displays terms found by xml
             searchsploitout()  # tests search terms by machine
             terms = []  # emptys search terms for next search
-    
+
     return True
 
 
@@ -698,7 +700,7 @@ def run():
     elif parseArgs.examine != None:
         examine(parseArgs.examine)
         return
-    
+
     # formatting exclusions
     if not parseArgs.case:
         for i in range(len(parseArgs.exclude)):
