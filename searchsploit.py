@@ -22,7 +22,7 @@ terms = []  # global array that contains all search terms
 # RC info
 
 progname = os.path.basename(argv[0])
-VERSION = "v1.5" # Program version
+VERSION = "v1.5"  # Program version
 files_array = []  # Array options with file names
 name_array = []  # Array options with database names
 path_array = []  # Array options with paths to database files
@@ -34,18 +34,25 @@ def scrapeRC():
     """
     divider = []
 
-    try:
-        settingsFile = open("/etc/.searchsploit_rc", "r")
-    except:
-        try:
-            settingsFile = open(os.path.expanduser("~/.searchsploit_rc"), "r")
-        except:
-            settingsFile = open(os.path.abspath(
-                os.sys.path[0] + "/.searchsploit_rc"), "r")
-            # Checks for config in home directory
+    paths = [
+        "/etc/.searchsploit_rc",
+        os.path.expanduser("~/.searchsploit_rc"),
+        os.path.expanduser("~/.local/.searchsploit_rc"),
+        os.path.abspath(os.path.join(os.sys.path[0], ".searchsploit_rc"))
+    ]
 
-    settings = settingsFile.read().split("\n")
-    settingsFile.close()
+    for p in paths:
+        if os.path.exists(p):
+            with open(p, "r") as settingsFile:
+                settings = settingsFile.read().split("\n")
+                settingsFile.close()
+                break
+    else:
+        print("ERROR: Cannot find .searchsploit_rc\nPlease make sure it is located in one of its well known locations.")
+        print("It can be anywhere in one of these locations:")
+        for p in paths:
+            print("\"{0}\"".format(p))
+        exit(2)
 
     for i in settings:
         if(i == "" or i[0] == "#"):
@@ -62,17 +69,8 @@ def scrapeRC():
 
     # This section is to remove database paths that do not exist
     larray = len(files_array)
-    for i in range(larray - 1, 0, -1):
-        try:
-            tempRead = open(os.path.abspath(os.path.join(path_array[i], files_array[i])),
-                            "r", encoding="utf8")
-            tempRead.read()
-            tempRead.close()
-        except:
-            try:
-                tempRead.close()
-            except:
-                pass
+    for i in range(larray - 1, -1, -1):
+        if not os.path.exists(os.path.abspath(os.path.join(path_array[i], files_array[i]))):
             files_array.pop(i)
             name_array.pop(i)
             path_array.pop(i)
@@ -151,7 +149,8 @@ parser.add_argument("--id", action="store_true",
                     help="Display the EDB-ID value rather than local path.")
 parser.add_argument("--nmap", metavar="file.xml", nargs="?", type=argparse.FileType("r"), default=None, const=os.sys.stdin,
                     help="Checks all results in Nmap's XML output with service version (e.g.: nmap -sV -oX file.xml).\nUse \"-v\" (verbose) to try even more combinations")
-parser.add_argument("--version", action="version", version="%(prog)s {0}".format(VERSION))
+parser.add_argument("--version", action="version",
+                    version="%(prog)s {0}".format(VERSION))
 parser.add_argument("--exclude", nargs="*", type=str, default=list(), metavar="[terms]",
                     help="Remove certain terms from the results. Option best added after all other terms have been gathered.")
 
@@ -171,7 +170,7 @@ def update():
 
         # update via git
         os.chdir(path_array[i])  # set path to repos directory
-        os.system("git pull -v upstream master")
+        os.system("git pull -v origin master")
         print("[i] Git Pull Complete")
     os.chdir(cwd)
     return
@@ -183,7 +182,7 @@ def update():
 def drawline():
     """ Draws a line in the terminal.
     """
-    line = "" * (int(COL) - 1) 
+    line = "" * (int(COL) - 1)
     print(line)
 
 
@@ -193,7 +192,7 @@ def drawline(lim):
     """
     line = "-" * lim
     line += "+"
-    line += "-" * (COL - lim - 2) # -2 for terminal padding
+    line += "-" * (COL - lim - 2)  # -2 for terminal padding
     print(line)
 
 
@@ -203,19 +202,24 @@ def highlightTerm(line, term):
     @term: the term that will be found in line and used to highlight the line\n
     @autoComp: [optional] if true, then it will output the string with the flags already turned into ANSI
     """
-    try:
-        term = term.lower()
-        part1 = line[:line.lower().index(term)]
-        part2 = line[line.lower().index(
-            term): line.lower().index(term) + len(term)]
-        part3 = line[line.lower().index(term) + len(term):]
-        line = part1 + '\033[91m' + part2 + '\033[0m' + part3
-    except:
-        line = line
+    # immediate override if colour option is used
+    if not parseArgs.colour:
+        return line
+
+    marker = 0  # marks where the term is first found
+    term = term.lower()
+
+    while (line.lower().find(term, marker) >= 0):
+        marker = line.lower().find(term, marker)  # update location of new found term
+        part1 = line[:marker]
+        part2 = line[marker: marker + len(term)]
+        part3 = line[marker + len(term):]
+        line = "{0}\033[91m{1}\033[0m{2}".format(part1, part2, part3)
+        marker += len(term) + 4
     return line
 
 
-def separater(lim, line1:str, line2:str):
+def separater(lim, line1: str, line2: str):
     """ Splits the two texts to fit perfectly within the terminal width
     """
     lim = int(lim)
@@ -224,10 +228,17 @@ def separater(lim, line1:str, line2:str):
         print(line)
         return
 
-    line1_length = lim - 1 # subtract 1 for padding
-    line2_length = int(COL) - lim - 2 - 1 # -2 for divider padding and -1 for terminal padding
-    format_string = "{{title:{title_length}.{title_length}s}}\033[0m | {{path:{path_length}.{path_length}s}}\033[0m"    
-    
+    line1_length = lim - 1  # subtract 1 for padding
+    # -2 for divider padding and -1 for terminal padding
+    line2_length = int(COL) - lim - 2 - 1
+    format_string = "{{title:{title_length}.{title_length}s}}\033[0m | {{path:{path_length}.{path_length}s}}\033[0m"
+
+    # Escape options for colour
+    if not parseArgs.colour:
+        print("{{0:{0}.{0}s}} | {{1:{1}.{1}s}}".format(
+            line1_length, line2_length).format(line1, line2))
+        return
+
     # increase lim by markers to not include highlights in series
     last_mark = 0
     while (line1.find("\033[91m", last_mark, line1_length + 5) >= 0):
@@ -246,9 +257,9 @@ def separater(lim, line1:str, line2:str):
         line2_length += 4
         last_mark = line2.find("\033[0m", last_mark, line2_length + 4) + 4
 
-
     # Creating format string for print
-    fstring = format_string.format(title_length=line1_length, path_length=line2_length)
+    fstring = format_string.format(
+        title_length=line1_length, path_length=line2_length)
     line = fstring.format(title=line1, path=line2)
     print(line)
 
@@ -461,6 +472,8 @@ def nmapxml(file=""):
     if no file name is given, then it tries stdin\n
     @return: returns true if it fails
     """
+    import xml.etree.ElementTree as ET
+
     global terms
     global STDIN
 
@@ -486,47 +499,41 @@ def nmapxml(file=""):
     if content == "" or content[:5] != "<?xml":
         STDIN = content
         return False
-    # making sure beautiful soup is importable first
-    try:
-        from bs4 import BeautifulSoup
-    except:
-        print(
-            "Error: you need to have beautifulsoup installed to properly use this program")
-        print("To install beautifulsoup, run 'pip install beautifulsoup4' in your commandline.")
-        return False
     # Read XML file
 
     # ## Feedback to enduser
     if (type(file) == str):
-        print("[i] Reading: " + highlightTerm(str(file), str(file), True))
+        print("[i] Reading: " + highlightTerm(str(file), str(file)))
     else:
-        print("[i] Reading: " + highlightTerm(file.name, file.name, True))
+        print("[i] Reading: " + highlightTerm(file.name, file.name))
     tmpaddr = ""
     tmpname = ""
     # ## Read in XMP (IP, name, service, and version)
-    # xx This time with beautiful soup!
-    xmlsheet = BeautifulSoup(content, "lxml")
+    root = ET.fromstring(content)
 
-    hostsheet = xmlsheet.find_all("host")
+    hostsheet = root.findall("host")
     for host in hostsheet:
         # made these lines to separate searches by machine
-        tmpaddr = host.find("address").get("addr")
+        tmpaddr = host.find("address").attrib["addr"]
         tmpaddr = highlightTerm(tmpaddr, tmpaddr)
-        try:
-            tmpname = host.find("hostname").get("name")
+
+        if (host.find("hostnames/hostname") != None):
+            tmpname = host.find("hostnames/hostname").attrib["name"]
             tmpname = highlightTerm(tmpname, tmpname)
-        except:
-            tmpname = " "
         print("Finding exploits for " + tmpaddr +
               " (" + tmpname + ")")  # print name of machine
-        for service in host.find_all("service"):
-            terms.append(str(service.get("name")))
-            terms.append(str(service.get("product")))
-            terms.append(str(service.get("version")))
+        for service in host.findall("ports/port/service"):
+            if "name" in service.attrib.keys():
+                terms.append(str(service.attrib["name"]))
+            if "product" in service.attrib.keys():
+                terms.append(str(service.get("product")))
+            if "version" in service.attrib.keys():
+                terms.append(str(service.get("version")))
             validTerm(terms)
             print("Searching terms:", terms)  # displays terms found by xml
             searchsploitout()  # tests search terms by machine
             terms = []  # emptys search terms for next search
+
     return True
 
 
@@ -693,7 +700,7 @@ def run():
     elif parseArgs.examine != None:
         examine(parseArgs.examine)
         return
-    
+
     # formatting exclusions
     if not parseArgs.case:
         for i in range(len(parseArgs.exclude)):
