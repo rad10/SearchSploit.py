@@ -38,7 +38,7 @@ def scrapeRC():
         "/etc/.searchsploit_rc",
         os.path.expanduser("~/.searchsploit_rc"),
         os.path.expanduser("~/.local/.searchsploit_rc"),
-        os.path.abspath(os.path.join(os.sys.path[0], "/.searchsploit_rc"))
+        os.path.abspath(os.path.join(os.sys.path[0], ".searchsploit_rc"))
     ]
 
     for p in paths:
@@ -47,6 +47,12 @@ def scrapeRC():
                 settings = settingsFile.read().split("\n")
                 settingsFile.close()
                 break
+    else:
+        print("ERROR: Cannot find .searchsploit_rc\nPlease make sure it is located in one of its well known locations.")
+        print("It can be anywhere in one of these locations:")
+        for p in paths:
+            print("\"{0}\"".format(p))
+        exit(2)
     
     for i in settings:
         if(i == "" or i[0] == "#"):
