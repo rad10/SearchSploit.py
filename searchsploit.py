@@ -539,7 +539,10 @@ def nmapxml(file=""):
 
     # First check whether file exists or use stdin
     try:
-        contentFile = open(file, "r")
+        if (type(file) == str):
+            contentFile = open(file, "r")
+        else:
+            contentFile = file  # if file access, link directly to file pointer
         content = contentFile.read()
         contentFile.close()
     except:
@@ -606,7 +609,10 @@ def nmapgrep(file=""):
 
     # First check whether file exists or use stdin
     try:
-        contentFile = open(file, "r")
+        if (type(file) == str):
+            contentFile = open(file, "r")
+        else:
+            contentFile = file
         content = contentFile.read()
         contentFile.close()
     except:
