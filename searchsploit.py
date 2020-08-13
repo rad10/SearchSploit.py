@@ -213,6 +213,7 @@ def highlightTerm(line, term, autoComp=False):
 def separater(lim, line1, line2):
     """ Splits the two texts to fit perfectly within the terminal width
     """
+    lim = int(lim)
     if OVERFLOW:
         line = line1 + " | " + line2
         line = line.replace(":8", '\033[91m').replace(":9", '\033[0m')
