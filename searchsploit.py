@@ -176,9 +176,7 @@ def update():
 def drawline():
     """ Draws a line in the terminal.
     """
-    line = ""
-    for i in range(int(COL)):
-        line += "-"
+    line = "" * (int(COL) - 1) 
     print(line)
 
 
@@ -186,12 +184,9 @@ def drawline(lim):
     """ Draws a line in the terminal.\n
     @lim: column where the border is suppossed to be
     """
-    line = ""
-    for i in range(lim):
-        line += "-"
+    line = "-" * lim
     line += "+"
-    while len(line) < COL:
-        line += "-"
+    line += "-" * (COL - lim - 2) # -2 for terminal padding
     print(line)
 
 
