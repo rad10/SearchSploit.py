@@ -216,65 +216,27 @@ def separater(lim, line1, line2):
     lim = int(lim)
     if OVERFLOW:
         line = line1 + " | " + line2
-        line = line.replace(":8", '\033[91m').replace(":9", '\033[0m')
         print(line)
         return
 
+    line1_length = lim - 1 # subtract 1 for padding
+    line2_length = int(COL) - lim - 2 - 1 # -2 for divider padding and -1 for terminal padding
+    format_string = "{{title:{title_length}.{title_length}s}}\033[0m | {{path:{path_length}.{path_length}s}}\033[0m"    
+    
     # increase lim by markers to not include highlights in series
-    if ":8" in line1:
-        lim += 2
-        if ":9" in line1:
-            lim += 2
+    if "\033[91m" in line1[:line1_length + 5]:
+        line1_length += 5
+    if "\033[0m" in line1[:line1_length + 4]:
+        line1_length += 4
+    if "\033[91m" in line2[:line2_length + 5]:
+        line2_length += 5
+    if "\033[0m" in line2[:line2_length + 4]:
+        line2_length += 4
 
-    if (len(line1) >= lim):
-        line1 = line1[:lim-1]
-        if line1.count(":8") > line1.count(":9"):
-            if line1[len(line1)-1:] == ":8":
-                line1 = line1[:len(line1)-2]
-            if line1[-1] == ":":
-                line1 += "9"
-            else:
-                line1 += ":9"
-        if line1[-1] == ":":
-            line1 = line1[:len(line1)-2]
-    while len(line1) <= lim:
-        line1 += " "
-    if(len(line2) >= COL-lim):
-        line2 = line2[:lim-1]
-        if line2.count(":8") > line2.count(":9"):
-            if line2[len(line2)-1:] == ":8":
-                line2 = line2[:len(line2)-2]
-            elif line2[-1] == ":":
-                line2 += "9"
-            else:
-                line2 += ":9"
-        if line2[-1] == ":":
-            line2 = line2[:len(line2)-2]
 
-    max = COL
-    if ":8" in line1:
-        max += 2
-    if ":9" in line1:
-        max += 2
-    if ":8" in line2:
-        max += 2
-    if ":9" in line2:
-        max += 2
-
-    line = line1 + " | " + line2
-    if(len(line) > max):
-        line = line[:max]
-        if line.count(":8") > line.count(":9"):
-            if line[len(line)-1:] == ":8":
-                line = line[:len(line)-2]
-            if line[-1] == ":":
-                line += "9"
-            else:
-                line += ":9"
-        if line[-1] == ":":
-            line = line[:len(line)-2]
-
-    line = line.replace(":8", '\033[91m').replace(":9", '\033[0m')
+    # Creating format string for print
+    fstring = format_string.format(title_length=line1_length, path_length=line2_length)
+    line = fstring.format(title=line1, path=line2)
     print(line)
 
 
