@@ -72,12 +72,12 @@ def scrapeRC():
     for i in range(larray - 1, 0, -1):
         try:
             tempRead = open(os.path.abspath(os.path.join(path_array[i], files_array[i])),
-                 "r", encoding="utf8")
+                            "r", encoding="utf8")
             tempRead.read()
             tempRead.close()
         except:
             try:
-            tempRead.close()
+                tempRead.close()
             except:
                 pass
             files_array.pop(i)
@@ -307,7 +307,8 @@ def findExploit(id):
     """
     exploit = []
     for i in range(len(files_array)):
-        exploit = cpFromDb(os.path.abspath(os.path.join(path_array[i], files_array[i])), id)
+        exploit = cpFromDb(os.path.abspath(
+            os.path.join(path_array[i], files_array[i])), id)
         if exploit == []:
             continue
         else:
@@ -405,19 +406,22 @@ def searchsploitout():
         temp = ""
         for i in terms:
             temp += i + " "
-        jsonDict["SEARCH"] = temp[:-1] # Adding the search terms
+        jsonDict["SEARCH"] = temp[:-1]  # Adding the search terms
         searchs = []
         try:
             for i in range(len(files_array)):
                 jsonDict["DB_PATH_" + name_array[i].upper()] = path_array[i]
                 searchs.clear()
-                query = searchdb(os.path.abspath(os.path.join(path_array[i], files_array[i])), terms, [2,0,3,4,5,6,1])
+                query = searchdb(os.path.abspath(os.path.join(
+                    path_array[i], files_array[i])), terms, [2, 0, 3, 4, 5, 6, 1])
                 for lines in query:
-                    searchs.append({"Title": lines[0].replace('"', ""), "EDB-ID":int(lines[1]), "Date": lines[2], "Author":lines[3].replace('"', ""), "Type":lines[4], "Platform": lines[5], "Path":path_array[i] + "/" + lines[6]})
+                    searchs.append({"Title": lines[0].replace('"', ""), "EDB-ID": int(lines[1]), "Date": lines[2], "Author": lines[3].replace(
+                        '"', ""), "Type": lines[4], "Platform": lines[5], "Path": path_array[i] + "/" + lines[6]})
                 jsonDict["RESULTS_" + name_array[i].upper()] = searchs.copy()
                 searchs.clear()
             import json.encoder
-            jsonResult = json.dumps(jsonDict, indent=4, separators=(", ", ": "))
+            jsonResult = json.dumps(
+                jsonDict, indent=4, separators=(", ", ": "))
             print(jsonResult)
         except KeyboardInterrupt:
             pass
@@ -430,11 +434,14 @@ def searchsploitout():
     try:
         for i in range(len(files_array)):
             if EDBID:
-                query = searchdb(os.path.abspath(os.path.join(path_array[i], files_array[i])), terms, [2, 0])
+                query = searchdb(os.path.abspath(os.path.join(
+                    path_array[i], files_array[i])), terms, [2, 0])
             elif WEBLINK:
-                query = searchdb(os.path.abspath(os.path.join(path_array[i], files_array[i])), terms, [2, 1, 0])
+                query = searchdb(os.path.abspath(os.path.join(
+                    path_array[i], files_array[i])), terms, [2, 1, 0])
             else:
-                query = searchdb(os.path.abspath(os.path.join(path_array[i], files_array[i])), terms, [2, 1])
+                query = searchdb(os.path.abspath(os.path.join(
+                    path_array[i], files_array[i])), terms, [2, 1])
 
             if len(query) == 0:  # is the search results came up with nothing
                 print(name_array[i] + ": No Results")
@@ -614,8 +621,8 @@ def mirror(id):
     absfile = path_array[ind]
 
     currDir = os.getcwd()
-    inp = open(os.path.normpath(os.path.join(absfile,exploit[1])), "rb")
-    out = open(os.path.join(currDir,os.path.basename(exploit[1])), "wb")
+    inp = open(os.path.normpath(os.path.join(absfile, exploit[1])), "rb")
+    out = open(os.path.join(currDir, os.path.basename(exploit[1])), "wb")
     out.write(inp.read())
     inp.close()
     out.close()
@@ -632,11 +639,14 @@ def examine(id):
         return
     if exploit[1].endswith(".pdf"):
         import webbrowser
-        webbrowser.open("file:///" + os.path.abspath(os.path.join(path_array[ind], exploit[1])), autoraise=True)
+        webbrowser.open(
+            "file:///" + os.path.abspath(os.path.join(path_array[ind], exploit[1])), autoraise=True)
     elif(os.sys.platform == "win32"):
-        os.system("notepad " + os.path.relpath(os.path.join(path_array[ind], exploit[1])))
+        os.system(
+            "notepad " + os.path.relpath(os.path.join(path_array[ind], exploit[1])))
     else:
-        os.system("pager " + os.path.relpath(os.path.join(path_array[ind],exploit[1])))
+        os.system(
+            "pager " + os.path.relpath(os.path.join(path_array[ind], exploit[1])))
     print("[EDBID]:" + exploit[0])
     print("[Exploit]:" + exploit[2])
     print("[Path]:" + os.path.abspath(os.path.join(path_array[ind], exploit[1])))
