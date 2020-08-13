@@ -1,17 +1,9 @@
 #!/usr/bin/env python3
 from sys import argv, exit
 import os
+import argparse
 
 # Default options
-COLOUR = True
-EDBID = False
-EXACT = False
-JSON = False
-OVERFLOW = False
-WEBLINK = False
-TITLE = False
-IGNORE = False
-CASE = False
 COL = 0
 STDIN = ""  # made to hold standard input for multiple functions
 
@@ -30,6 +22,7 @@ terms = []  # global array that contains all search terms
 # RC info
 
 progname = os.path.basename(argv[0])
+VERSION = "v1.5" # Program version
 files_array = []  # Array options with file names
 name_array = []  # Array options with database names
 path_array = []  # Array options with paths to database files
@@ -88,68 +81,82 @@ def scrapeRC():
 
 scrapeRC()
 
+################
+## Arg Parser ##
+################
+parseArgs = None  # Variable to hold values from parser
+parser = argparse.ArgumentParser(
+    prefix_chars="-+/", formatter_class=argparse.RawTextHelpFormatter, prog=os.path.basename(argv[0]))
 
-# Usage info
-def usage():
-    """ This function displays the manual for the program and the help function
-    """
-    print("  Usage: " + progname + " [options] term1 [term2] ... [termN]")
-    print("")
-    print("==========")
-    print(" Examples ")
-    print("==========")
-    print("  " + progname + " afd windows local")
-    print("  " + progname + " -t oracle windows")
-    print("  " + progname + " -p 39446")
-    print("  " + progname + " linux kernel 3.2 --exclude=\"(PoC)|/dos/\"")
-    print("  " + progname + " linux reverse password")
-    print("")
-    print("  For more examples, see the manual: https://www.exploit-db.com/searchsploit")
-    print("")
-    print("=========")
-    print(" Options ")
-    print("=========")
-    print(
-        "   -c, --case     [Term]      Perform a case-sensitive search (Default is inSEnsITiVe).")
-    print(
-        "   -e, --exact    [Term]      Perform an EXACT match on exploit title (Default is AND) [Implies \"-t\"].")
-    print(
-        " -i, --ignore    [Term]     Adds any redundant term in despite it possibly giving false positives.")
-    print("   -h, --help                 Show this help screen.")
-    print("   -j, --json     [Term]      Show result in JSON format.")
-    print(
-        "   -m, --mirror   [EDB-ID]    Mirror (aka copies) an exploit to the current working directory.")
-    print(
-        "   -o, --overflow [Term]      Exploit titles are allowed to overflow their columns.")
-    print(
-        "   -p, --path     [EDB-ID]    Show the full path to an exploit (and also copies the path to the clipboard if possible).")
-    print(
-        "   -t, --title    [Term]      Search JUST the exploit title (Default is title AND the file's path).")
-    print("   -u, --update               Check for and install any exploitdb package updates (deb or git).")
-    print(
-        "   -w, --www      [Term]      Show URLs to Exploit-DB.com rather than the local path.")
-    print(
-        "   -x, --examine  [EDB-ID]    Examine (aka opens) the exploit using \$PAGER.")
-    print("       --colour               Disable colour highlighting in search results.")
-    print("       --id                   Display the EDB-ID value rather than local path.")
-    print(
-        "       --nmap     [file.xml]  Checks all results in Nmap's XML output with service version (e.g.: nmap -sV -oX file.xml).")
-    print("                                Use \"-v\" (verbose) to try even more combinations")
-    print("       --exclude=\"term\"       Remove values from results. By using \"|\" to separated you can chain multiple values.")
-    print("                                e.g. --exclude=\"term1|term2|term3\".")
-    print("")
-    print("=======")
-    print(" Notes ")
-    print("=======")
-    print(" * You can use any number of search terms.")
-    print(" * Search terms are not case-sensitive (by default), and ordering is irrelevant.")
-    print("   * Use '-c' if you wish to reduce results by case-sensitive searching.")
-    print("   * And/Or '-e' if you wish to filter results by using an exact match.")
-    print(" * Use '-t' to exclude the file's path to filter the search results.")
-    print("   * Remove false positives (especially when searching using numbers - i.e. versions).")
-    print(" * When updating or displaying help, search terms will be ignored.")
-    print("")
-    exit(2)
+parser.description = """
+==========
+ Examples
+==========
+  %(prog)s afd windows local
+  %(prog)s -t oracle windows
+  %(prog)s -p 39446
+  %(prog)s linux kernel 3.2 --exclude="(PoC)|/dos/"
+  %(prog)s linux reverse password
+
+  For more examples, see the manual: https://www.exploit-db.com/searchsploit
+
+=========
+ Options
+=========   
+"""
+parser.epilog = """
+=======
+ Notes
+=======
+ * You can use any number of search terms.
+ * Search terms are not case-sensitive (by default), and ordering is irrelevant.
+   * Use '-c' if you wish to reduce results by case-sensitive searching.
+   * And/Or '-e' if you wish to filter results by using an exact match.
+ * Use '-t' to exclude the file's path to filter the search results.
+   * Remove false positives (especially when searching using numbers - i.e. versions).
+ * When updating or displaying help, search terms will be ignored.
+"""
+
+# Arguments
+parserCommands = parser.add_mutually_exclusive_group()
+
+parser.add_argument("searchTerms", nargs="*")
+
+parser.add_argument("-c", "--case", action="store_true",
+                    help="Perform a case-sensitive search (Default is inSEnsITiVe).")
+parser.add_argument("-e", "--exact", action="store_true",
+                    help="Perform an EXACT match on exploit title (Default is AND) [Implies \"-t\"].")
+parser.add_argument("-i", "--ignore", action="store_true",
+                    help="Adds any redundant term in despite it possibly giving false positives.")
+parser.add_help = True
+parser.add_argument("-j", "--json", action="store_true",
+                    help="Show result in JSON format.")
+parserCommands.add_argument("-m", "--mirror", type=int, default=None,
+                            metavar="[EDB-ID]", help="Mirror (aka copies) an exploit to the current working directory.")
+parser.add_argument("-o", "--overflow", action="store_true",
+                    help="Exploit titles are allowed to overflow their columns.")
+parserCommands.add_argument("-p", "--path", type=int, default=None,
+                            metavar="[EDB-ID]", help="Show the full path to an exploit (and also copies the path to the clipboard if possible).")
+parser.add_argument("-t", "--title", action="store_true",
+                    help="Search JUST the exploit title (Default is title AND the file's path).")
+parser.add_argument("-u", "--update", action="store_true",
+                    help="Check for and install any exploitdb package updates (deb or git).")
+parser.add_argument("-w", "--www", action="store_true",
+                    help="Show URLs to Exploit-DB.com rather than the local path.")
+parserCommands.add_argument("-x", "--examine", type=int, default=None,
+                            metavar=("[EDB-ID]"), help="Examine (aka opens) the exploit using \$PAGER.")
+parser.add_argument("--colour", action="store_false",
+                    help="Disable colour highlighting in search results.")
+parser.add_argument("--id", action="store_true",
+                    help="Display the EDB-ID value rather than local path.")
+parser.add_argument("--nmap", metavar="file.xml", nargs="?", type=argparse.FileType("r"), default=None, const=os.sys.stdin,
+                    help="Checks all results in Nmap's XML output with service version (e.g.: nmap -sV -oX file.xml).\nUse \"-v\" (verbose) to try even more combinations")
+parser.add_argument("--version", action="version", version="%(prog)s {0}".format(VERSION))
+parser.add_argument("--exclude", nargs="*", type=str, default=list(), metavar="[terms]",
+                    help="Remove certain terms from the results. Option best added after all other terms have been gathered.")
+
+# Argument variable
+parseArgs = parser.parse_args()
 
 # Update database check
 
@@ -218,7 +225,7 @@ def highlightTerm(line, term, autoComp=False):
 def separater(lim, line1, line2):
     """ Splits the two texts to fit perfectly within the terminal width
     """
-    if OVERFLOW:
+    if parseArgs.overflow:
         line = line1 + " | " + line2
         line = line.replace(":8", '\033[91m').replace(":9", '\033[0m')
         print(line)
@@ -321,23 +328,25 @@ def validTerm(argsList):
     invalidTerms = ["microsoft", "microsoft windows", "apache", "ftp",
                     "http", "linux", "net", "network", "oracle", "ssh", "ms-wbt-server", "unknown", "none"]
     dudTerms = ["unknown", "none"]
-    if EXACT:
+    if parseArgs.exact:
         return argsList
     argsList.sort()
     argslen = len(argsList)
-    for i in range(argslen - 1, 0, -1):
+    for i in range(argslen - 1, -1, -1):
         if (argsList[i].lower() in dudTerms):
             argsList.pop(i)
-        elif (argsList[i].lower() in invalidTerms and not IGNORE):
+        elif (argsList[i].lower() in invalidTerms and not parseArgs.ignore):
             print(
                 "[-] Skipping term: " + argsList[i] + "   (Term is too general. Please re-search manually:")
             argsList.pop(i)
             # Issues, return with something
-        elif not CASE:
+        elif argsList[i].lower() in parseArgs.exclude:
+            argsList.pop(i)
+        elif not parseArgs.case:
             argsList[i] = argsList[i].lower()
     argsList.sort()
     argslen = len(argsList)
-    for i in range(argslen-1, 1, -1):
+    for i in range(argslen - 1, 0, -1):
         if (argsList[i] == argsList[i-1]):
             argsList.pop(i)
         # what to do if the list ends up empty afterwards
@@ -359,7 +368,7 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
     """
     searchTerms = []
     tmphold = []
-    if EXACT:
+    if parseArgs.exact:
         tmpstr = str(terms[0])
         for i in range(1, len(terms)):
             tmpstr += " " + terms[i]
@@ -369,25 +378,31 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
     db = dbFile.read().split('\n')
     for lines in db:
         if (lines != ""):
-            for term in terms:
-                if TITLE:
-                    line = lines.split(",")[2]
-                    if CASE:
-                        if term not in line:
-                            break
-                    elif term not in line.lower():
-                        break
-                elif CASE:
-                    if term not in lines:
-                        break
-                elif term not in lines.lower():
+            for ex in parseArgs.exclude:
+                if parseArgs.case and ex in lines:
+                    break
+                elif ex in lines.lower():
                     break
             else:
-                for i in cols:
-                    space = lines.split(",")
-                    tmphold.append(space[i])
-                searchTerms.append(tmphold)
-                tmphold = []
+                for term in terms:
+                    if parseArgs.title:
+                        line = lines.split(",")[2]
+                        if parseArgs.case:
+                            if term not in line:
+                                break
+                        elif term not in line.lower():
+                            break
+                    elif parseArgs.case:
+                        if term not in lines:
+                            break
+                    elif term not in lines.lower():
+                        break
+                else:
+                    for i in cols:
+                        space = lines.split(",")
+                        tmphold.append(space[i])
+                    searchTerms.append(tmphold)
+                    tmphold = []
         if(lim != -1 and len(searchTerms) >= lim):
             break
     dbFile.close()
@@ -401,7 +416,7 @@ def searchsploitout():
 
     # xx validating terms
     validTerm(terms)
-    if JSON:
+    if parseArgs.json:
         jsonDict = {}
         temp = ""
         for i in terms:
@@ -433,10 +448,10 @@ def searchsploitout():
     query = []  # temp variable thatll hold all the results
     try:
         for i in range(len(files_array)):
-            if EDBID:
+            if parseArgs.id:
                 query = searchdb(os.path.abspath(os.path.join(
                     path_array[i], files_array[i])), terms, [2, 0])
-            elif WEBLINK:
+            elif parseArgs.www:
                 query = searchdb(os.path.abspath(os.path.join(
                     path_array[i], files_array[i])), terms, [2, 1, 0])
             else:
@@ -451,14 +466,14 @@ def searchsploitout():
             separater(COL/4, "", os.path.abspath(path_array[i]))
             drawline(lim)  # display title for every database
             for lines in query:
-                if WEBLINK:  # if requesting weblinks. shapes the output for urls
+                if parseArgs.www:  # if requesting weblinks. shapes the output for urls
                     lines[1] = "https://www.exploit-db.com/" + \
                         lines[1][:lines[1].index("/")] + "/" + lines[2]
-                if COLOUR:
+                if parseArgs.colour:
                     for term in terms:
                         lines[0] = highlightTerm(lines[0], term)
                         lines[1] = highlightTerm(lines[1], term)
-                if EDBID:
+                if parseArgs.id:
                     # made this change so that ids get less display space
                     separater(int(COL * 0.8), lines[0], lines[1])
                 else:
@@ -480,7 +495,10 @@ def nmapxml(file=""):
 
     # First check whether file exists or use stdin
     try:
-        contentFile = open(file, "r")
+        if (type(file) == str):
+            contentFile = open(file, "r")
+        else:
+            contentFile = file  # if file access, link directly to file pointer
         content = contentFile.read()
         contentFile.close()
     except:
@@ -508,7 +526,10 @@ def nmapxml(file=""):
     # Read XML file
 
     # ## Feedback to enduser
-    print("[i] Reading: " + highlightTerm(str(file), str(file), True))
+    if (type(file) == str):
+        print("[i] Reading: " + highlightTerm(str(file), str(file), True))
+    else:
+        print("[i] Reading: " + highlightTerm(file.name, file.name, True))
     tmpaddr = ""
     tmpname = ""
     # ## Read in XMP (IP, name, service, and version)
@@ -547,7 +568,10 @@ def nmapgrep(file=""):
 
     # First check whether file exists or use stdin
     try:
-        contentFile = open(file, "r")
+        if (type(file) == str):
+            contentFile = open(file, "r")
+        else:
+            contentFile = file
         content = contentFile.read()
         contentFile.close()
     except:
@@ -667,83 +691,8 @@ def run():
     """ Main function of script. hooks rest of functions
     """
 
-    # global variables brought down
-    global CASE
-    global EXACT
-    global IGNORE
-    global JSON
-    global OVERFLOW
-    global TITLE
-    global WEBLINK
-    global COLOUR
-    global EDBID
-
-    if (len(argv) == 1 and os.sys.stdin.isatty()):
-        usage()  # runs if given no arguements
-        return
-    for i in range(1, len(argv[1:]) + 1):
-        if (argv[i] == "-h" or argv[i] == "--help"):
-            usage()
-            return
-        elif (argv[i] == "-c" or argv[i] == "--case"):
-            CASE = True
-        elif (argv[i] == "-e" or argv[i] == "--exact"):
-            EXACT = True
-        elif (argv[i] == "-i" or argv[i] == "--ignore"):
-            IGNORE = True
-        elif (argv[i] == "-j" or argv[i] == "--json"):
-            JSON = True
-        elif (argv[i] == "-m" or argv[i] == "--mirror"):
-            mirror(argv[i + 1])
-            return
-        elif(argv[i] == "-o" or argv[i] == "--overflow"):
-            OVERFLOW = True
-        elif(argv[i] == "-p" or argv[i] == "--path"):
-            path(argv[i + 1])
-            return
-        elif(argv[i] == "-t"or argv[i] == "--title"):
-            TITLE = True
-        elif(argv[i] == "-u"or argv[i] == "--update"):
-            update()
-            return
-        elif(argv[i] == "-w"or argv[i] == "--www"):
-            WEBLINK = True
-        elif(argv[i] == "-x"or argv[i] == "--examine"):
-            examine(argv[i + 1])
-            return
-        elif(argv[i] == "--colour"):
-            COLOUR = False
-        elif(argv[i] == "--id"):
-            EDBID = True
-        elif(argv[i] == "--nmap"):
-            try:
-                if(argv[i + 1][0] != "-"):
-                    print(nmapxml(argv[i+1]))
-                    if not nmapxml(argv[i + 1]):
-                        if not nmapgrep(argv[i + 1]):
-                            usage()
-                else:
-                    usage()
-            except:
-                if(not os.sys.stdin.isatty()):
-                    if not nmapxml():
-                        if not nmapgrep():
-                            usage()
-                else:
-                    usage()
-            return
-        else:
-            terms.append(argv[i])
-
-    if (not os.sys.stdin.isatty()):
-        text = str(os.sys.stdin.read())
-        terms.extend(text.split())
-    if terms == []:
-        usage()  # if no actual terms were made just arguements, then exit
-        return
-
     # Colors for windows
-    if COLOUR and os.sys.platform == "win32":
+    if parseArgs.colour and os.sys.platform == "win32":
         try:
             import colorama
         except ImportError:
@@ -752,9 +701,48 @@ def run():
             print(
                 "\"pip install colorama\" in your terminal so that windows can use colors.")
             print("Printing output without colors")
-            COLOUR = False
+            parseArgs.colour = False
         else:
             colorama.init()
+
+    if (len(argv) == 1 and os.sys.stdin.isatty()):
+        parser.print_help()  # runs if given no arguements
+        return
+
+    # DB Tools
+    if parseArgs.mirror != None:
+        mirror(parseArgs.mirror)
+        return
+    elif parseArgs.path != None:
+        path(parseArgs.path)
+        return
+    elif parseArgs.update:
+        update()
+        return
+    elif parseArgs.examine != None:
+        examine(parseArgs.examine)
+        return
+    
+    # formatting exclusions
+    if not parseArgs.case:
+        for i in range(len(parseArgs.exclude)):
+            parseArgs.exclude[i] = parseArgs.exclude[i].lower()
+
+    # Nmap tool
+    if parseArgs.nmap != None:
+        result = nmapxml(parseArgs.nmap)
+        if not result:
+            result = nmapgrep(parseArgs.nmap)
+            if not result:
+                parser.print_help()
+                return
+
+    terms.extend(parseArgs.searchTerms)
+
+    if (parseArgs.nmap == None and not os.sys.stdin.isatty()):
+        text = str(os.sys.stdin.read())
+        terms.extend(text.split())
+
     searchsploitout()
 
 
