@@ -471,6 +471,8 @@ def nmapxml(file=""):
     if no file name is given, then it tries stdin\n
     @return: returns true if it fails
     """
+    import xml.etree.ElementTree as ET
+
     global terms
     global STDIN
 
@@ -496,47 +498,42 @@ def nmapxml(file=""):
     if content == "" or content[:5] != "<?xml":
         STDIN = content
         return False
-    # making sure beautiful soup is importable first
-    try:
-        from bs4 import BeautifulSoup
-    except:
-        print(
-            "Error: you need to have beautifulsoup installed to properly use this program")
-        print("To install beautifulsoup, run 'pip install beautifulsoup4' in your commandline.")
-        return False
     # Read XML file
 
     # ## Feedback to enduser
     if (type(file) == str):
-        print("[i] Reading: " + highlightTerm(str(file), str(file), True))
+        print("[i] Reading: " + highlightTerm(str(file), str(file)))
     else:
-        print("[i] Reading: " + highlightTerm(file.name, file.name, True))
+        print("[i] Reading: " + highlightTerm(file.name, file.name))
     tmpaddr = ""
     tmpname = ""
     # ## Read in XMP (IP, name, service, and version)
-    # xx This time with beautiful soup!
-    xmlsheet = BeautifulSoup(content, "lxml")
+    root = ET.fromstring(content)
 
-    hostsheet = xmlsheet.find_all("host")
+
+    hostsheet = root.findall("host")
     for host in hostsheet:
         # made these lines to separate searches by machine
-        tmpaddr = host.find("address").get("addr")
+        tmpaddr = host.find("address").attrib["addr"]
         tmpaddr = highlightTerm(tmpaddr, tmpaddr)
-        try:
-            tmpname = host.find("hostname").get("name")
+
+        if (host.find("hostnames/hostname") != None):
+            tmpname = host.find("hostnames/hostname").attrib["name"]
             tmpname = highlightTerm(tmpname, tmpname)
-        except:
-            tmpname = " "
         print("Finding exploits for " + tmpaddr +
               " (" + tmpname + ")")  # print name of machine
-        for service in host.find_all("service"):
-            terms.append(str(service.get("name")))
-            terms.append(str(service.get("product")))
-            terms.append(str(service.get("version")))
+        for service in host.findall("ports/port/service"):
+            if "name" in service.attrib.keys():
+                terms.append(str(service.attrib["name"]))
+            if "product" in service.attrib.keys():
+                terms.append(str(service.get("product")))
+            if "version" in service.attrib.keys():
+                terms.append(str(service.get("version")))
             validTerm(terms)
             print("Searching terms:", terms)  # displays terms found by xml
             searchsploitout()  # tests search terms by machine
             terms = []  # emptys search terms for next search
+    
     return True
 
 
