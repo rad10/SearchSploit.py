@@ -34,19 +34,20 @@ def scrapeRC():
     """
     divider = []
 
-    try:
-        settingsFile = open("/etc/.searchsploit_rc", "r")
-    except:
-        try:
-            settingsFile = open(os.path.expanduser("~/.searchsploit_rc"), "r")
-        except:
-            settingsFile = open(os.path.abspath(
-                os.sys.path[0] + "/.searchsploit_rc"), "r")
-            # Checks for config in home directory
+    paths = [
+        "/etc/.searchsploit_rc",
+        os.path.expanduser("~/.searchsploit_rc"),
+        os.path.expanduser("~/.local/.searchsploit_rc"),
+        os.path.abspath(os.path.join(os.sys.path[0], "/.searchsploit_rc"))
+    ]
 
-    settings = settingsFile.read().split("\n")
-    settingsFile.close()
-
+    for p in paths:
+        if os.path.exists(p):
+            with open(p, "r") as settingsFile:
+                settings = settingsFile.read().split("\n")
+                settingsFile.close()
+                break
+    
     for i in settings:
         if(i == "" or i[0] == "#"):
             continue  # Ignores lines that are empty or are just comments
