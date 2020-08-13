@@ -681,7 +681,19 @@ def run():
     """ Main function of script. hooks rest of functions
     """
 
-    # global variables brought down
+    # Colors for windows
+    if parseArgs.colour and os.sys.platform == "win32":
+        try:
+            import colorama
+        except ImportError:
+            print(
+                "You do not have colorama installed. if you want to run with colors, please run:")
+            print(
+                "\"pip install colorama\" in your terminal so that windows can use colors.")
+            print("Printing output without colors")
+            parseArgs.colour = False
+        else:
+            colorama.init()
 
     if (len(argv) == 1 and os.sys.stdin.isatty()):
         parser.print_help()  # runs if given no arguements
@@ -713,19 +725,6 @@ def run():
         text = str(os.sys.stdin.read())
         terms.extend(text.split())
 
-    # Colors for windows
-    if parseArgs.colour and os.sys.platform == "win32":
-        try:
-            import colorama
-        except ImportError:
-            print(
-                "You do not have colorama installed. if you want to run with colors, please run:")
-            print(
-                "\"pip install colorama\" in your terminal so that windows can use colors.")
-            print("Printing output without colors")
-            parseArgs.colour = False
-        else:
-            colorama.init()
     searchsploitout()
 
 
