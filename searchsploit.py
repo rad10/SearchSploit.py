@@ -330,7 +330,7 @@ def validTerm(argsList):
         return argsList
     argsList.sort()
     argslen = len(argsList)
-    for i in range(argslen - 1, 0, -1):
+    for i in range(argslen - 1, -1, -1):
         if (argsList[i].lower() in dudTerms):
             argsList.pop(i)
         elif (argsList[i].lower() in invalidTerms and not parseArgs.ignore):
@@ -342,7 +342,7 @@ def validTerm(argsList):
             argsList[i] = argsList[i].lower()
     argsList.sort()
     argslen = len(argsList)
-    for i in range(argslen-1, 1, -1):
+    for i in range(argslen - 1, 0, -1):
         if (argsList[i] == argsList[i-1]):
             argsList.pop(i)
         # what to do if the list ends up empty afterwards
