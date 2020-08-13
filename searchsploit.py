@@ -203,6 +203,10 @@ def highlightTerm(line, term):
     @term: the term that will be found in line and used to highlight the line\n
     @autoComp: [optional] if true, then it will output the string with the flags already turned into ANSI
     """
+    # immediate override if colour option is used
+    if not parseArgs.colour:
+        return line
+
     marker = 0 # marks where the term is first found
     term = term.lower()
 
@@ -229,6 +233,11 @@ def separater(lim, line1:str, line2:str):
     line2_length = int(COL) - lim - 2 - 1 # -2 for divider padding and -1 for terminal padding
     format_string = "{{title:{title_length}.{title_length}s}}\033[0m | {{path:{path_length}.{path_length}s}}\033[0m"    
     
+    # Escape options for colour
+    if not parseArgs.colour:
+        print("{{0:{0}.{0}s}} | {{1:{1}.{1}s}}".format(line1_length, line2_length).format(line1, line2))
+        return
+
     # increase lim by markers to not include highlights in series
     last_mark = 0
     while (line1.find("\033[91m", last_mark, line1_length + 5) >= 0):
