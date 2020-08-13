@@ -22,6 +22,7 @@ terms = []  # global array that contains all search terms
 # RC info
 
 progname = os.path.basename(argv[0])
+VERSION = "v1.5" # Program version
 files_array = []  # Array options with file names
 name_array = []  # Array options with database names
 path_array = []  # Array options with paths to database files
@@ -118,9 +119,7 @@ parser.epilog = """
 
 # Arguments
 parserCommands = parser.add_mutually_exclusive_group()
-# parserSearchTerms = parserCommands.add_argument_group()
 
-# TODO: Build custom formatter to prevent smaller args from having values
 parser.add_argument("searchTerms", nargs="*")
 
 parser.add_argument("-c", "--case", action="store_true",
@@ -152,6 +151,7 @@ parser.add_argument("--id", action="store_true",
                     help="Display the EDB-ID value rather than local path.")
 parser.add_argument("--nmap", metavar="file.xml", nargs="?", type=argparse.FileType("r"), default=None, const=os.sys.stdin,
                     help="Checks all results in Nmap's XML output with service version (e.g.: nmap -sV -oX file.xml).\nUse \"-v\" (verbose) to try even more combinations")
+parser.add_argument("--version", action="version", version="%(prog)s {0}".format(VERSION))
 parser.add_argument("--exclude", nargs="*", type=str, default=list(), metavar="[terms]",
                     help="Remove certain terms from the results. Option best added after all other terms have been gathered.")
 
