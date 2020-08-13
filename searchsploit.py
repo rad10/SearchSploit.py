@@ -215,7 +215,7 @@ def highlightTerm(line, term):
     return line
 
 
-def separater(lim, line1, line2):
+def separater(lim, line1:str, line2:str):
     """ Splits the two texts to fit perfectly within the terminal width
     """
     lim = int(lim)
@@ -229,14 +229,22 @@ def separater(lim, line1, line2):
     format_string = "{{title:{title_length}.{title_length}s}}\033[0m | {{path:{path_length}.{path_length}s}}\033[0m"    
     
     # increase lim by markers to not include highlights in series
-    if "\033[91m" in line1[:line1_length + 5]:
+    last_mark = 0
+    while (line1.find("\033[91m", last_mark, line1_length + 5) >= 0):
         line1_length += 5
-    if "\033[0m" in line1[:line1_length + 4]:
+        last_mark = line1.find("\033[91m", last_mark, line1_length + 5) + 5
+    last_mark = 0
+    while (line1.find("\033[0m", last_mark, line1_length + 4) >= 0):
         line1_length += 4
-    if "\033[91m" in line2[:line2_length + 5]:
+        last_mark = line1.find("\033[0m", last_mark, line1_length + 4) + 4
+    last_mark = 0
+    while (line2.find("\033[91m", last_mark, line2_length + 5) >= 0):
         line2_length += 5
-    if "\033[0m" in line2[:line2_length + 4]:
+        last_mark = line2.find("\033[91m", last_mark, line2_length + 5) + 5
+    last_mark = 0
+    while (line2.find("\033[0m", last_mark, line2_length + 4) >= 0):
         line2_length += 4
+        last_mark = line2.find("\033[0m", last_mark, line2_length + 4) + 4
 
 
     # Creating format string for print
