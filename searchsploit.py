@@ -190,7 +190,7 @@ def drawline(lim):
     print(line)
 
 
-def highlightTerm(line, term, autoComp=False):
+def highlightTerm(line, term):
     """ Part one of new highlighting process. Highlights by adding :8 and :9 as escape characters as ansi takes several lines. the rest is compiled in separater unless autocomp is true\n
     @line: the phrase to be checked\n
     @term: the term that will be found in line and used to highlight the line\n
@@ -202,9 +202,7 @@ def highlightTerm(line, term, autoComp=False):
         part2 = line[line.lower().index(
             term): line.lower().index(term) + len(term)]
         part3 = line[line.lower().index(term) + len(term):]
-        line = part1 + ':8' + part2 + ':9' + part3
-        if autoComp:
-            line = line.replace(":8", '\033[91m').replace(":9", '\033[0m')
+        line = part1 + '\033[91m' + part2 + '\033[0m' + part3
     except:
         line = line
     return line
@@ -466,7 +464,7 @@ def nmapxml(file=""):
     # Read XML file
 
     # ## Feedback to enduser
-    print("[i] Reading: " + highlightTerm(str(file), str(file), True))
+    print("[i] Reading: " + highlightTerm(str(file), str(file)))
     tmpaddr = ""
     tmpname = ""
     # ## Read in XMP (IP, name, service, and version)
@@ -477,10 +475,10 @@ def nmapxml(file=""):
     for host in hostsheet:
         # made these lines to separate searches by machine
         tmpaddr = host.find("address").get("addr")
-        tmpaddr = highlightTerm(tmpaddr, tmpaddr, True)
+        tmpaddr = highlightTerm(tmpaddr, tmpaddr)
         try:
             tmpname = host.find("hostname").get("name")
-            tmpname = highlightTerm(tmpname, tmpname, True)
+            tmpname = highlightTerm(tmpname, tmpname)
         except:
             tmpname = " "
         print("Finding exploits for " + tmpaddr +
@@ -541,8 +539,8 @@ def nmapgrep(file=""):
 
     # Outputing results from matrix
     for host in nmatrix:
-        tmpaddr = highlightTerm(host[0][0], host[0][0], True)
-        tmpname = highlightTerm(host[0][1], host[0][1], True)
+        tmpaddr = highlightTerm(host[0][0], host[0][0])
+        tmpname = highlightTerm(host[0][1], host[0][1])
         print("Finding exploits for " + tmpaddr +
               " (" + tmpname + ")")  # print name of machine
         for service in host[1]:
