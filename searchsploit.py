@@ -726,61 +726,32 @@ def run():
     # global variables brought down
 
     if (len(argv) == 1 and os.sys.stdin.isatty()):
-        usage()  # runs if given no arguements
+        parser.print_help()  # runs if given no arguements
         return
-    for i in range(1, len(argv[1:]) + 1):
-        if (argv[i] == "-h" or argv[i] == "--help"):
-            usage()
-            return
-        elif (argv[i] == "-c" or argv[i] == "--case"):
-            CASE = True
-        elif (argv[i] == "-e" or argv[i] == "--exact"):
-            EXACT = True
-        elif (argv[i] == "-i" or argv[i] == "--ignore"):
-            IGNORE = True
-        elif (argv[i] == "-j" or argv[i] == "--json"):
-            JSON = True
-        elif (argv[i] == "-m" or argv[i] == "--mirror"):
-            mirror(argv[i + 1])
-            return
-        elif(argv[i] == "-o" or argv[i] == "--overflow"):
-            OVERFLOW = True
-        elif(argv[i] == "-p" or argv[i] == "--path"):
-            path(argv[i + 1])
-            return
-        elif(argv[i] == "-t"or argv[i] == "--title"):
-            TITLE = True
-        elif(argv[i] == "-u"or argv[i] == "--update"):
-            update()
-            return
-        elif(argv[i] == "-w"or argv[i] == "--www"):
-            WEBLINK = True
-        elif(argv[i] == "-x"or argv[i] == "--examine"):
-            examine(argv[i + 1])
-            return
-        elif(argv[i] == "--colour"):
-            COLOUR = False
-        elif(argv[i] == "--id"):
-            EDBID = True
-        elif(argv[i] == "--nmap"):
-            try:
-                if(argv[i + 1][0] != "-"):
-                    print(nmapxml(argv[i+1]))
-                    if not nmapxml(argv[i + 1]):
-                        if not nmapgrep(argv[i + 1]):
-                            usage()
-                else:
-                    usage()
-            except:
-                if(not os.sys.stdin.isatty()):
-                    if not nmapxml():
-                        if not nmapgrep():
-                            usage()
-                else:
-                    usage()
-            return
-        else:
-            terms.append(argv[i])
+
+    if parseArgs.mirror != None:
+        mirror(parseArgs.mirror)
+        return
+    elif parseArgs.path != None:
+        path(parseArgs.path)
+        return
+    elif parseArgs.update:
+        update()
+        return
+    elif parseArgs.examine != None:
+        examine(parseArgs.examine)
+        return
+    elif parseArgs.nmap != None:
+        result = nmapxml(parseArgs.nmap)
+        if not result:
+            result = nmapgrep(parseArgs.nmap)
+            if not result:
+                parser.print_help()
+                return
+        print(result)
+        return
+
+    terms.extend(parseArgs.searchTerms)
 
     if (not os.sys.stdin.isatty()):
         text = str(os.sys.stdin.read())
