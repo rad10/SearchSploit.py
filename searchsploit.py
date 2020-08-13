@@ -517,7 +517,7 @@ def nmapxml(file=""):
 
     # ## Feedback to enduser
     if (type(file) == str):
-    print("[i] Reading: " + highlightTerm(str(file), str(file), True))
+        print("[i] Reading: " + highlightTerm(str(file), str(file), True))
     else:
         print("[i] Reading: " + highlightTerm(file.name, file.name, True))
     tmpaddr = ""
@@ -706,12 +706,10 @@ def run():
             if not result:
                 parser.print_help()
                 return
-        print(result)
-        return
 
     terms.extend(parseArgs.searchTerms)
 
-    if (not os.sys.stdin.isatty()):
+    if (parseArgs.nmap == None and not os.sys.stdin.isatty()):
         text = str(os.sys.stdin.read())
         terms.extend(text.split())
 
