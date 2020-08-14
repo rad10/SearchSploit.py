@@ -468,6 +468,11 @@ def searchsploitout():
                 if parseArgs.www:  # if requesting weblinks. shapes the output for urls
                     lines[1] = "https://www.exploit-db.com/" + \
                         lines[1][:lines[1].index("/")] + "/" + lines[2]
+
+                # substring path with title
+                if lines[1].startswith(name_array[i].lower()):
+                    lines[1] = lines[1][len(name_array[i]) + 1:]
+
                 if parseArgs.colour:
                     for term in terms:
                         lines[0] = highlightTerm(lines[0], term)
