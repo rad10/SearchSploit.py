@@ -683,7 +683,7 @@ def examine(id):
 ##################
 
 
-def run():
+def main():
     """ Main function of script. hooks rest of functions
     """
 
@@ -742,4 +742,5 @@ def run():
     searchsploitout()
 
 
-run()
+if __name__ == "__main__":
+    main()
