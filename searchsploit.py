@@ -2,6 +2,7 @@
 from sys import argv, exit
 import os
 import argparse
+import re
 
 # Default options
 COL = 0
@@ -309,6 +310,41 @@ def findExploit(id):
         else:
             return i, exploit
 
+baseVersion = re.compile(r'((?:(?:<)\s*)|(?:[RrVv]))?((?:\d+(?:\.(?:\d+|x))+)|(?:\d+))')
+
+def hasVersion(term: str)->bool:
+    """ Returns true if the string contains any numbers that could resemble a verison
+    """
+    return (len(baseVersion.findall(term)) > 0)
+
+def getVersion(term: str):
+    return baseVersion.findall(term) # returns the first found object, taking tuple out of list
+
+def cmpVersion(leftVersion: str, rightVersion: str)->int:
+    """ Compares the two versions and returns an integer depending on which one if newer
+    """
+    leftComponent = leftVersion.split(".")
+    rightComponent = rightVersion.split(".")
+    for i in range(min(len(leftComponent), len(rightComponent))):
+        if (leftComponent[i] != rightComponent[i]):
+            # Dealing with wildcard scenarios
+            if ("x" in leftComponent[i]):
+                if (len(re.findall("((?:{0})|(?:{1}))$".format(leftComponent[i],leftComponent[i].replace("x","\\d*")), rightComponent[i])) > 0):
+                    # if the string matches itself or regex replacing all x's with \d's, then it is a match
+                    return 0
+            elif ("x" in rightComponent[i]):
+                if (len(re.findall("((?:{0})|(?:{1}))$".format(rightComponent[i],rightComponent[i].replace("x","\\d*")), leftComponent[i])) > 0):
+                    # if the string matches itself or regex replacing all x's with \d's, then it is a match
+                    return 0
+
+            # Removing excess chars
+            # print(leftComponent[i], rightComponent[i])
+            for j in re.findall("([A-Za-z]+)", leftComponent[i]):
+                leftComponent[i] = leftComponent[i].replace(j, "")
+            for j in re.findall("([A-Za-z]+)", rightComponent[i]):
+                rightComponent[i] = rightComponent[i].replace(j, "")
+            return int(rightComponent[i]) - int(leftComponent[i])
+    return len(rightComponent) - len(leftComponent) # if they are equal up their shortest version, then the latest is the longest version
 
 def validTerm(argsList):
     """ Takes the terms inputed and returns an organized list with no repeats and no poor word choices
