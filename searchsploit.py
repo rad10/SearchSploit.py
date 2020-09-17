@@ -210,7 +210,7 @@ def drawline(lim):
     print(line)
 
 
-def highlightTerm(line, term):
+def highlightTerm(line: str, term)->str:
     """ Part one of new highlighting process. Highlights by adding :8 and :9 as escape characters as ansi takes several lines. the rest is compiled in separater unless autocomp is true\n
     @line: the phrase to be checked\n
     @term: the term that will be found in line and used to highlight the line\n
@@ -219,6 +219,10 @@ def highlightTerm(line, term):
     # immediate override if colour option is used
     if not parseArgs.colour:
         return line
+
+    # Adjustments for if term is version tuple
+    if type(term) is tuple:
+        term = term[1] # TODO: Make way to highlight line if fits version parameters
 
     marker = 0  # marks where the term is first found
     term = term.lower()
