@@ -379,6 +379,11 @@ def validTerm(argsList):
         print("if you want to search with them anyway, run the command again with the -i arguement")
         exit()
 
+    # Converting certain terms into version terms
+    for i in range(len(argsList)):
+        if hasVersion(argsList[i]):
+            argsList[i] = getVersion(argsList[i])[0] # Getting first result from list
+
     return argsList
 
 
