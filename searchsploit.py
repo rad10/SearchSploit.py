@@ -127,7 +127,8 @@ searchHeader.add_argument("-e", "--exact", action="store_true",
                           help="Perform an EXACT match on exploit title (Default is AND) [Implies \"-t\"].")
 searchHeader.add_argument("-i", "--ignore", action="store_true",
                           help="Adds any redundant term in despite it possibly giving false positives.")
-# TODO: Add strict
+searchHeader.add_argument("-s", "--strict", action="store_true",
+                          help="Perform a strict search, so input values must exist, disabling fuzzy search for version range e.g. \"1.1\" would not be detected in \"1.0 < 1.3\"")
 searchHeader.add_argument("-t", "--title", action="store_true",
                           help="Search JUST the exploit title (Default is title AND the file's path).")
 searchHeader.add_argument("--exclude", nargs="*", type=str, default=list(), metavar="[terms]",
@@ -385,8 +386,9 @@ def validTerm(argsList):
 
     # Converting certain terms into version terms
     for i in range(len(argsList)):
-        if hasVersion(argsList[i]):
-            argsList[i] = getVersion(argsList[i])[0] # Getting first result from list
+        if not parseArgs.strict and hasVersion(argsList[i]):
+            # Getting first result from list
+            argsList[i] = getVersion(argsList[i])[0]
 
     return argsList
 
@@ -432,6 +434,9 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
                         elif term not in lines.lower():
                             break
                     elif type(term) is tuple:
+                        # skipping if strict
+                        if parseArgs.strict:
+                            break
                         line = lines.split(",")[2]
                         versions = getVersion(line)
                         versionCompatible = False # helps for the or status here
