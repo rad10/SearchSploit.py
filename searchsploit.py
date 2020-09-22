@@ -211,7 +211,7 @@ def drawline(lim):
     print(line)
 
 
-def highlightTerm(line: str, term)->str:
+def highlightTerm(line: str, term) -> str:
     """ Part one of new highlighting process. Highlights by adding :8 and :9 as escape characters as ansi takes several lines. the rest is compiled in separater unless autocomp is true\n
     @line: the phrase to be checked\n
     @term: the term that will be found in line and used to highlight the line\n
@@ -223,7 +223,8 @@ def highlightTerm(line: str, term)->str:
 
     # Adjustments for if term is version tuple
     if type(term) is tuple:
-        term = term[1] # TODO: Make way to highlight line if fits version parameters
+        # TODO: Make way to highlight line if fits version parameters
+        term = term[1]
 
     marker = 0  # marks where the term is first found
     term = term.lower()
@@ -315,17 +316,23 @@ def findExploit(id):
         else:
             return i, exploit
 
-baseVersion = re.compile(r'((?:(?:<)\s*)|(?:[RrVv]))?((?:\d+(?:\.(?:\d+|x))+)|(?:\d+))')
 
-def hasVersion(term: str)->bool:
+baseVersion = re.compile(
+    r'((?:(?:<)\s*)|(?:[RrVv]))?((?:\d+(?:\.(?:\d+|x))+)|(?:\d+))')
+
+
+def hasVersion(term: str) -> bool:
     """ Returns true if the string contains any numbers that could resemble a verison
     """
     return (len(baseVersion.findall(term)) > 0)
 
-def getVersion(term: str):
-    return baseVersion.findall(term) # returns the first found object, taking tuple out of list
 
-def cmpVersion(leftVersion: str, rightVersion: str)->int:
+def getVersion(term: str):
+    # returns the first found object, taking tuple out of list
+    return baseVersion.findall(term)
+
+
+def cmpVersion(leftVersion: str, rightVersion: str) -> int:
     """ Compares the two versions and returns an integer depending on which one if newer
     """
     leftComponent = leftVersion.split(".")
@@ -334,11 +341,11 @@ def cmpVersion(leftVersion: str, rightVersion: str)->int:
         if (leftComponent[i] != rightComponent[i]):
             # Dealing with wildcard scenarios
             if ("x" in leftComponent[i]):
-                if (len(re.findall("((?:{0})|(?:{1}))$".format(leftComponent[i],leftComponent[i].replace("x","\\d*")), rightComponent[i])) > 0):
+                if (len(re.findall("((?:{0})|(?:{1}))$".format(leftComponent[i], leftComponent[i].replace("x", "\\d*")), rightComponent[i])) > 0):
                     # if the string matches itself or regex replacing all x's with \d's, then it is a match
                     return 0
             elif ("x" in rightComponent[i]):
-                if (len(re.findall("((?:{0})|(?:{1}))$".format(rightComponent[i],rightComponent[i].replace("x","\\d*")), leftComponent[i])) > 0):
+                if (len(re.findall("((?:{0})|(?:{1}))$".format(rightComponent[i], rightComponent[i].replace("x", "\\d*")), leftComponent[i])) > 0):
                     # if the string matches itself or regex replacing all x's with \d's, then it is a match
                     return 0
 
@@ -349,7 +356,9 @@ def cmpVersion(leftVersion: str, rightVersion: str)->int:
             for j in re.findall("([A-Za-z]+)", rightComponent[i]):
                 rightComponent[i] = rightComponent[i].replace(j, "")
             return int(rightComponent[i]) - int(leftComponent[i])
-    return len(rightComponent) - len(leftComponent) # if they are equal up their shortest version, then the latest is the longest version
+    # if they are equal up their shortest version, then the latest is the longest version
+    return len(rightComponent) - len(leftComponent)
+
 
 def validTerm(argsList):
     """ Takes the terms inputed and returns an organized list with no repeats and no poor word choices
@@ -413,14 +422,14 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
     db = dbFile.read().split('\n')
     for lines in db:
         if (lines != ""):
-            for ex in parseArgs.exclude: # Removing positive lines with excluded values
+            for ex in parseArgs.exclude:  # Removing positive lines with excluded values
                 if parseArgs.case and ex in lines:
                     break
                 elif ex in lines.lower():
                     break
             else:
                 for term in terms:
-                    if type(term) is str: # separate versions from search terms
+                    if type(term) is str:  # separate versions from search terms
                         if parseArgs.title:
                             line = lines.split(",")[2]
                             if parseArgs.case:
@@ -439,25 +448,28 @@ def searchdb(path="", terms=[], cols=[], lim=-1):
                             break
                         line = lines.split(",")[2]
                         versions = getVersion(line)
-                        versionCompatible = False # helps for the or status here
+                        versionCompatible = False  # helps for the or status here
                         if (len(versions) == 0):
-                            break # if no versions could be detected in line, throw out line
-                        if (term[0] != "") and "<" not in term[0]: # version has r or s in front
+                            break  # if no versions could be detected in line, throw out line
+                        if (term[0] != "") and "<" not in term[0]:  # version has r or s in front
                             for v in versions:
                                 if (v[0].lower() != term[0]):
-                                    continue # skip this if version doesnt start with same tag
-                                versionCompatible = versionCompatible or (cmpVersion(term[1], v[1]) >= 0)
+                                    continue  # skip this if version doesnt start with same tag
+                                versionCompatible = versionCompatible or (
+                                    cmpVersion(term[1], v[1]) >= 0)
                                 # this will only ever be true if just one is true
                             if not versionCompatible:
                                 break
                         elif "<" in term[0]:
                             for v in versions:
-                                versionCompatible = versionCompatible or (cmpVersion(term[1], v[1]) <= 0)
+                                versionCompatible = versionCompatible or (
+                                    cmpVersion(term[1], v[1]) <= 0)
                             if not versionCompatible:
                                 break
                         else:
                             for v in versions:
-                                versionCompatible = versionCompatible or (cmpVersion(term[1], v[1]) >= 0)
+                                versionCompatible = versionCompatible or (
+                                    cmpVersion(term[1], v[1]) >= 0)
                             if not versionCompatible:
                                 break
                 else:
