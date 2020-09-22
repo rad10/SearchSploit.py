@@ -116,43 +116,56 @@ parser.epilog = """
 """
 
 # Arguments
-parserCommands = parser.add_mutually_exclusive_group()
-
 parser.add_argument("searchTerms", nargs="*")
 
-parser.add_argument("-c", "--case", action="store_true",
-                    help="Perform a case-sensitive search (Default is inSEnsITiVe).")
-parser.add_argument("-e", "--exact", action="store_true",
-                    help="Perform an EXACT match on exploit title (Default is AND) [Implies \"-t\"].")
-parser.add_argument("-i", "--ignore", action="store_true",
-                    help="Adds any redundant term in despite it possibly giving false positives.")
-parser.add_help = True
-parser.add_argument("-j", "--json", action="store_true",
-                    help="Show result in JSON format.")
+searchHeader = parser.add_argument_group(
+    "Search Terms", "These arguments are used to manipulate the results of a search to get more specific searches.")
+searchHeader.add_argument("-c", "--case", action="store_true",
+                          help="Perform a case-sensitive search (Default is inSEnsITiVe).")
+searchHeader.add_argument("-e", "--exact", action="store_true",
+                          help="Perform an EXACT match on exploit title (Default is AND) [Implies \"-t\"].")
+searchHeader.add_argument("-i", "--ignore", action="store_true",
+                          help="Adds any redundant term in despite it possibly giving false positives.")
+# TODO: Add strict
+searchHeader.add_argument("-t", "--title", action="store_true",
+                          help="Search JUST the exploit title (Default is title AND the file's path).")
+searchHeader.add_argument("--exclude", nargs="*", type=str, default=list(), metavar="[terms]",
+                          help="Remove certain terms from the results. Option best added after all other terms have been gathered.")
+
+outputHeader = parser.add_argument_group(
+    "Output", "These arguments drastically change the output given by the program. This can vary from how the results are listed to giving information on one specific exploit.")
+outputHeader.add_argument("-j", "--json", action="store_true",
+                          help="Show result in JSON format.")
+outputHeader.add_argument("-o", "--overflow", action="store_true",
+                          help="Exploit titles are allowed to overflow their columns.")
+# TODO: Add verbose
+outputHeader.add_argument("-w", "--www", action="store_true",
+                          help="Show URLs to Exploit-DB.com rather than the local path.")
+outputHeader.add_argument("--id", action="store_true",
+                          help="Display the EDB-ID value rather than local path.")
+
+outputHeader.add_argument("--colour", action="store_false",
+                          help="Disable colour highlighting in search results.")
+
+commandsHeader = parser.add_argument_group(
+    "EDB Tools", "These commands involve functions on individual EDB's.")
+parserCommands = commandsHeader.add_mutually_exclusive_group()
+parserCommands.add_help = True
 parserCommands.add_argument("-m", "--mirror", type=int, default=None,
                             metavar="[EDB-ID]", help="Mirror (aka copies) an exploit to the current working directory.")
-parser.add_argument("-o", "--overflow", action="store_true",
-                    help="Exploit titles are allowed to overflow their columns.")
+parserCommands.add_argument("-x", "--examine", type=int, default=None,
+                            metavar="[EDB-ID]", help="Examine (aka opens) the exploit using \$PAGER.")
 parserCommands.add_argument("-p", "--path", type=int, default=None,
                             metavar="[EDB-ID]", help="Show the full path to an exploit (and also copies the path to the clipboard if possible).")
-parser.add_argument("-t", "--title", action="store_true",
-                    help="Search JUST the exploit title (Default is title AND the file's path).")
-parser.add_argument("-u", "--update", action="store_true",
-                    help="Check for and install any exploitdb package updates (deb or git).")
-parser.add_argument("-w", "--www", action="store_true",
-                    help="Show URLs to Exploit-DB.com rather than the local path.")
-parserCommands.add_argument("-x", "--examine", type=int, default=None,
-                            metavar=("[EDB-ID]"), help="Examine (aka opens) the exploit using \$PAGER.")
-parser.add_argument("--colour", action="store_false",
-                    help="Disable colour highlighting in search results.")
-parser.add_argument("--id", action="store_true",
-                    help="Display the EDB-ID value rather than local path.")
-parser.add_argument("--nmap", metavar="file.xml", nargs="?", type=argparse.FileType("r"), default=None, const=os.sys.stdin,
-                    help="Checks all results in Nmap's XML output with service version (e.g.: nmap -sV -oX file.xml).\nUse \"-v\" (verbose) to try even more combinations")
-parser.add_argument("--version", action="version",
-                    version="%(prog)s {0}".format(VERSION))
-parser.add_argument("--exclude", nargs="*", type=str, default=list(), metavar="[terms]",
-                    help="Remove certain terms from the results. Option best added after all other terms have been gathered.")
+parserCommands.add_argument("-u", "--update", action="store_true",
+                            help="Check for and install any exploitdb package updates (deb or git).")
+parserCommands.add_argument("--version", action="version",
+                            version="%(prog)s {0}".format(VERSION))
+
+automationHeader = parser.add_argument_group(
+    "Automation", "This involves all tools that involve plugins from other tools, such as nmap.")
+automationHeader.add_argument("--nmap", metavar="file.xml", nargs="?", type=argparse.FileType("r"), default=None, const=os.sys.stdin,
+                              help="Checks all results in Nmap's XML output with service version (e.g.: nmap -sV -oX file.xml).\nUse \"-v\" (verbose) to try even more combinations")
 
 # Argument variable
 parseArgs = parser.parse_args()
@@ -455,6 +468,11 @@ def searchsploitout():
                 if parseArgs.www:  # if requesting weblinks. shapes the output for urls
                     lines[1] = "https://www.exploit-db.com/" + \
                         lines[1][:lines[1].index("/")] + "/" + lines[2]
+
+                # substring path with title
+                if lines[1].startswith(name_array[i].lower()):
+                    lines[1] = lines[1][len(name_array[i]) + 1:]
+
                 if parseArgs.colour:
                     for term in terms:
                         lines[0] = highlightTerm(lines[0], term)
@@ -665,7 +683,7 @@ def examine(id):
 ##################
 
 
-def run():
+def main():
     """ Main function of script. hooks rest of functions
     """
 
@@ -724,4 +742,5 @@ def run():
     searchsploitout()
 
 
-run()
+if __name__ == "__main__":
+    main()
